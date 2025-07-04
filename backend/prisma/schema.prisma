@@ -17,7 +17,8 @@ model User {
   profile_image_url String?   @db.Text
   email             String    @unique @db.VarChar(100)
   password          String    @db.VarChar(128)
-  phone_number      String    @db.VarChar(50)
+  phone_number      String    @unique @db.VarChar(50)
+  gender            String    @db.VarChar(50)
   role              Role
   birthday          DateTime
   created_at        DateTime  @default(now())
@@ -35,14 +36,13 @@ model Address {
   id          Int     @id @default(autoincrement()) @map("address_id")
   user_id     String  @db.Uuid
   street      String  @db.Text
-  street2     String? @db.Text        // ✅ Make optional if it's not always used
+  street2     String? @db.Text // ✅ Make optional if it's not always used
   city        String  @db.VarChar(50)
   region      String  @db.VarChar(50)
   postal_code String  @db.VarChar(20)
   is_primary  Boolean
 
-  user        User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("addresses")
 }
-

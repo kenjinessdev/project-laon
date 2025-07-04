@@ -1,6 +1,6 @@
 from fastapi.middleware.cors import CORSMiddleware
 from src.routes.routes import router as api_router
-from src.prisma import prisma
+from src.db.prisma import prisma
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi import FastAPI
 
@@ -29,13 +29,3 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     await prisma.disconnect()
-
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
-
-@app.get("/items/{item_id}")
-async def read_item(item_id: int):
-    return {"item_id": item_id}
