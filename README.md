@@ -55,7 +55,7 @@ prisma generate
 
 ```bash
 # make sure you are in backend/ directory
-uvicorn main:app --reload
+uvicorn src.main:app --reload
 ```
 then go to the link provided
 
