@@ -18,14 +18,12 @@ oauth.register(
     client_id=settings.GOOGLE_CLIENT_ID,
     client_secret=settings.GOOGLE_CLIENT_SECRET,
     access_token_url='https://oauth2.googleapis.com/token',
-    access_token_params=None,
     authorize_url='https://accounts.google.com/o/oauth2/auth',
-    authorize_params=None,
-    api_base_url='https://www.googleapis.com/oauth2/v1/',
-    userinfo_endpoint='https://www.googleapis.com/oauth2/v1/userinfo',
+    api_base_url='https://www.googleapis.com/oauth2/v1/',  # ✅ has https://
+    userinfo_endpoint='https://www.googleapis.com/oauth2/v1/userinfo',  # ✅ good
+    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
     client_kwargs={
-        'scope': 'openid email profile',
-        'redirect_url': settings.GOOGLE_REDIRECT_URI
+        'scope': 'openid email profile https://www.googleapis.com/auth/user.phonenumbers.read',
     },
 )
 
@@ -36,13 +34,44 @@ async def google_login(request: Request):
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
-@auth_router.get("/google/callback")
+@auth_router.get("/google/callback", name="google_callback")
 async def google_callback(request: Request):
-    token = await oauth.google.authorize_access_token(request)
-    user_info = await oauth.google.parse_id_token(request, token)
-    email = user_info.get("email")
-    if not email:
-        raise HTTPException(400, "Email not provided by Google")
+    try:
+        token = await oauth.google.authorize_access_token(request)
+        resp = await oauth.google.get("userinfo", token=token)
+        user_info = resp.json()
+        email = user_info.get("email")
+
+        if not email:
+            raise HTTPException(400, "Email not provided by Google")
+
+        user = await prisma.user.find_unique(where={"email": email})
+
+        if not user:
+            # You can modify this default creation logic as needed
+            user = await prisma.user.create(data={
+                "first_name": user_info.get("given_name", ""),
+                "last_name": user_info.get("family_name", ""),
+                "email": email,
+                "profile_image_url": user_info.get("picture", ""),
+                "password": "",  # Leave blank or set to None if nullable
+                "role": "customer",  # or your default role
+                "birthday": datetime(2000, 1, 1),  # fallback default
+                "gender": "unspecified",          # fallback default
+                # fallback default
+                "phone_number": user_info.get("phone_number") or "N/A",
+                "middle_name": "",
+                "suffix": ""
+            })
+
+        return {
+            "access_token": create_access_token(user.id),
+            "refresh_token": create_refresh_token(user.id),
+            "token_type": "bearer"
+        }
+
+    except OAuthError as e:
+        raise HTTPException(status_code=400, detail=f"OAuth error: {str(e)}")
 
 
 @auth_router.post("/register", response_model=User)
