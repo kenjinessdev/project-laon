@@ -54,4 +54,4 @@ class User(UserBase):
 
 class LoginSchema(BaseModel):
     email: EmailStr
-    password: constr(min_length=8)
+    password: str

@@ -11,6 +11,11 @@ def create_token(data: dict, expires_delta: timedelta):
 
 
 def create_access_token(user_id: str):
+    print("=== DEBUG: Access Token Settings ===")
+    print(f"JWT_SECRET: {settings.JWT_SECRET}")
+    print(f"JWT_ALGORITHM: {settings.JWT_ALGORITHM}")
+    print(
+        f"ACCESS_TOKEN_EXPIRE_MINUTES: {settings.ACCESS_TOKEN_EXPIRE_MINUTES}")
     return create_token({"sub": user_id}, timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
 
 
