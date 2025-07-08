@@ -44,7 +44,6 @@ async def google_callback(request: Request):
 
         if not email:
             raise HTTPException(400, "Email not provided by Google")
-
         user = await prisma.user.find_unique(where={"email": email})
 
         if not user:
@@ -59,7 +58,7 @@ async def google_callback(request: Request):
                 "birthday": datetime(2000, 1, 1),  # fallback default
                 "gender": "unspecified",          # fallback default
                 # fallback default
-                "phone_number": user_info.get("phone_number") or "N/A",
+                "phone_number": None,
                 "middle_name": "",
                 "suffix": ""
             })
