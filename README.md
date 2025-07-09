@@ -34,14 +34,21 @@ cd ./backend/
 ```
 
 *create* `.env` *file*
-```
-# ok ra ni bisag unsa, wla pa nako ni na setup
-JWT_SECRET="carrots"
 
-# supabase database prisma ORM url
+```bash
+GOOGLE_CLIENT_ID=google-client
+GOOGLE_CLIENT_SECRET=secret
+GOOGLE_REDIRECT_URI=http://localhost:8000/auth/google/callback
+
+FACEBOOK_CLIENT_ID=your-facebook-app-id
+FACEBOOK_CLIENT_SECRET=your-facebook-app-secret
+FACEBOOK_REDIRECT_URI=http://localhost:8000/auth/facebook/callback
+
+JWT_SECRET="mcDRfPao1LsKPTeUDJJO96URrhiTi2BeYIh-8ihjdZU"
+SESSION_SECRET="m6aDYVIED0zNcvYLvStiJm6EjBxSRIKUfLZDBY2ArTY"
 DATABASE_URL="postgresql://test:test!@localhost:5432/test"
-
 DEBUG=true
+
 ```
 
 ### 4. run prisma migration
@@ -55,7 +62,7 @@ prisma generate
 
 ```bash
 # make sure you are in backend/ directory
-uvicorn main:app --reload
+uvicorn src.main:app --reload
 ```
 then go to the link provided
 

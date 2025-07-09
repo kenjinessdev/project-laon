@@ -1,7 +1,9 @@
 from fastapi.middleware.cors import CORSMiddleware
 from src.routes.routes import router as api_router
-from src.prisma import prisma
+from src.db.prisma import prisma
 from fastapi.middleware.gzip import GZipMiddleware
+from starlette.middleware.sessions import SessionMiddleware
+from src.core.config import settings
 from fastapi import FastAPI
 
 app = FastAPI(
@@ -9,6 +11,7 @@ app = FastAPI(
 )
 
 app.add_middleware(GZipMiddleware, minimum_size=1000)
+app.add_middleware(SessionMiddleware, secret_key=settings.SESSION_SECRET)
 app.add_middleware(
     CORSMiddleware,
     # replace allow_origin with react localhost
@@ -29,13 +32,3 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     await prisma.disconnect()
-
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
-
-@app.get("/items/{item_id}")
-async def read_item(item_id: int):
-    return {"item_id": item_id}
