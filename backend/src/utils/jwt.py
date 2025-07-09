@@ -1,4 +1,5 @@
 # utils/jwt.py
+from jose import jwt, JWTError
 from datetime import datetime, timedelta
 from jose import jwt
 from src.core.config import settings
