@@ -1,6 +1,5 @@
 from fastapi import APIRouter
 from src.routes.auth import auth_router
-from src.routes.protected import role_router
 from src.routes.farmer import farmer_router
 from src.routes.customer import customer_route
 

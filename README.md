@@ -46,6 +46,8 @@ FACEBOOK_REDIRECT_URI=http://localhost:8000/auth/facebook/callback
 
 JWT_SECRET="mcDRfPao1LsKPTeUDJJO96URrhiTi2BeYIh-8ihjdZU"
 SESSION_SECRET="m6aDYVIED0zNcvYLvStiJm6EjBxSRIKUfLZDBY2ArTY"
+
+# replace with actual database link
 DATABASE_URL="postgresql://test:test!@localhost:5432/test"
 DEBUG=true
 
