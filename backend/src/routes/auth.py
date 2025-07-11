@@ -23,13 +23,20 @@ oauth.register(
     userinfo_endpoint='https://www.googleapis.com/oauth2/v1/userinfo',  # ✅ good
     server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
     client_kwargs={
-        'scope': 'openid email profile https://www.googleapis.com/auth/user.phonenumbers.read',
+        'scope': 'openid email profile https://www.googleapis.com/auth/user.birthday.read https://www.googleapis.com/auth/user.gender.read',
     },
 )
 
 
+# @auth_router.get("/google")
+# async def google_login(request: Request):
+#     redirect_uri = settings.GOOGLE_REDIRECT_URI
+#     return await oauth.google.authorize_redirect(request, redirect_uri)
+
+
 @auth_router.get("/google")
-async def google_login(request: Request):
+async def google_login(request: Request, role: str = "customer"):
+    request.session["role"] = role  # store it in session
     redirect_uri = settings.GOOGLE_REDIRECT_URI
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
@@ -38,27 +45,48 @@ async def google_login(request: Request):
 async def google_callback(request: Request):
     try:
         token = await oauth.google.authorize_access_token(request)
-        resp = await oauth.google.get("userinfo", token=token)
-        user_info = resp.json()
-        email = user_info.get("email")
 
+        resp = await oauth.google.get(
+            "https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos,birthdays,genders,phoneNumbers",
+            token=token
+        )
+        user_info = resp.json()
+
+        # Safe parsing
+        names = user_info.get("names", [{}])[0]
+        photos = user_info.get("photos", [{}])[0]
+        emails = user_info.get("emailAddresses", [{}])[0]
+        birthdays = user_info.get("birthdays", [{}])[0]
+        genders = user_info.get("genders", [{}])[0]
+        phones = user_info.get("phoneNumbers", [{}])[0]
+
+        email = emails.get("value")
         if not email:
             raise HTTPException(400, "Email not provided by Google")
-        user = await prisma.user.find_unique(where={"email": email})
 
+        user = await prisma.user.find_unique(where={"email": email})
         if not user:
-            # You can modify this default creation logic as needed
+            # get role from session (default to customer)
+            role = request.session.get("role", "customer")
+
+            # Convert birthday to datetime if available
+            bdate = birthdays.get("date")
+            birthday = datetime(
+                year=int(bdate.get("year", 2000)),
+                month=int(bdate.get("month", 1)),
+                day=int(bdate.get("day", 1))
+            ) if bdate else datetime(2000, 1, 1)
+
             user = await prisma.user.create(data={
-                "first_name": user_info.get("given_name", ""),
-                "last_name": user_info.get("family_name", ""),
+                "first_name": names.get("givenName", ""),
+                "last_name": names.get("familyName", ""),
                 "email": email,
-                "profile_image_url": user_info.get("picture", ""),
-                "password": "",  # Leave blank or set to None if nullable
-                "role": "customer",  # or your default role
-                "birthday": datetime(2000, 1, 1),  # fallback default
-                "gender": "unspecified",          # fallback default
-                # fallback default
-                "phone_number": None,
+                "profile_image_url": photos.get("url", ""),
+                "password": "",
+                "role": role,  # ✅ use selected role
+                "birthday": birthday,
+                "gender": genders.get("value", "unspecified").lower(),
+                "phone_number": phones.get("value", None),
                 "middle_name": "",
                 "suffix": ""
             })

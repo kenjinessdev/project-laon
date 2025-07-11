@@ -20,7 +20,7 @@ model User {
   email             String    @unique @db.VarChar(100)
   password          String    @db.VarChar(128)
   phone_number      String?   @unique @db.VarChar(50)
-  gender            String    @db.VarChar(50)
+  gender            String?   @db.VarChar(50)
   role              Role
   birthday          DateTime
   created_at        DateTime  @default(now())
@@ -129,4 +129,6 @@ model CartItem {
 
   cart    Cart    @relation(fields: [cart_id], references: [id])
   product Product @relation(fields: [product_id], references: [id])
+
+  @@map("cart_items")
 }
