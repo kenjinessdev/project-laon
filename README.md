@@ -38,11 +38,11 @@ cd ./backend/
 ```bash
 GOOGLE_CLIENT_ID=google-client
 GOOGLE_CLIENT_SECRET=secret
-GOOGLE_REDIRECT_URI=http://localhost:8000/auth/google/callback
+GOOGLE_REDIRECT_URI=http://localhost:8000/api/v1/auth/google/callback
 
 FACEBOOK_CLIENT_ID=your-facebook-app-id
 FACEBOOK_CLIENT_SECRET=your-facebook-app-secret
-FACEBOOK_REDIRECT_URI=http://localhost:8000/auth/facebook/callback
+FACEBOOK_REDIRECT_URI=http://localhost:8000/api/v1/auth/google/callback
 
 JWT_SECRET="mcDRfPao1LsKPTeUDJJO96URrhiTi2BeYIh-8ihjdZU"
 SESSION_SECRET="m6aDYVIED0zNcvYLvStiJm6EjBxSRIKUfLZDBY2ArTY"
