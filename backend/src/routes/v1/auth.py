@@ -8,6 +8,7 @@ from datetime import datetime
 from starlette.requests import Request
 from authlib.integrations.starlette_client import OAuth, OAuthError
 from src.core.config import settings
+from prisma.errors import UniqueViolationError
 # from src.models.user import UserOut, LoginSchema
 
 auth_router = APIRouter()
@@ -103,24 +104,26 @@ async def google_callback(request: Request):
 
 @auth_router.post("/register", response_model=User)
 async def register(user: UserCreate):
-    existing = await prisma.user.find_unique(where={"email": user.email})
-    if existing:
-        raise HTTPException(400, "Email already registered")
-    birthday_datetime = datetime.combine(user.birthday, datetime.min.time())
-    new_user = await prisma.user.create(data={
-        "first_name": user.first_name,
-        "middle_name": user.middle_name,
-        "last_name": user.last_name,
-        "suffix": user.suffix,
-        "profile_image_url": user.profile_image_url,
-        "email": user.email,
-        "password": hash_password(user.password),
-        "phone_number": user.phone_number,
-        "gender": user.gender,
-        "birthday": birthday_datetime,
-        "role": user.role
-    })
-    return new_user
+    try:
+        birthday_datetime = datetime.combine(
+            user.birthday, datetime.min.time())
+        new_user = await prisma.user.create(data={
+            "first_name": user.first_name,
+            "middle_name": user.middle_name,
+            "last_name": user.last_name,
+            "suffix": user.suffix,
+            "profile_image_url": user.profile_image_url,
+            "email": user.email,
+            "password": hash_password(user.password),
+            "phone_number": user.phone_number,
+            "gender": user.gender,
+            "birthday": birthday_datetime,
+            "role": user.role
+        })
+        return new_user
+
+    except UniqueViolationError:
+        raise HTTPException(status_code=400, detail="Email already registered")
 
 
 @auth_router.post("/login")
