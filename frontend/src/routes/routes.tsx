@@ -4,7 +4,16 @@ import {
   Route,
 } from "react-router-dom";
 import { Layout } from "./Layout";
+import Dashboard from "@/pages/Dashboard";
+import Products from "@/pages/Products";
+import Orders from "@/pages/Orders";
 
 export const router = createBrowserRouter(
-  createRoutesFromElements(<Route path="/" element={<Layout />}></Route>)
+  createRoutesFromElements(
+    <Route path="/" element={<Layout />}>
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/products" element={<Products />} />
+      <Route path="/orders" element={<Orders />} />
+    </Route>
+  )
 );
