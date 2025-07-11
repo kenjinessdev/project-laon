@@ -9,6 +9,8 @@ from starlette.requests import Request
 from authlib.integrations.starlette_client import OAuth, OAuthError
 from src.core.config import settings
 from prisma.errors import UniqueViolationError
+from src.core.limiter import limiter
+from starlette.requests import Request
 # from src.models.user import UserOut, LoginSchema
 
 auth_router = APIRouter()
@@ -29,12 +31,6 @@ oauth.register(
 )
 
 
-# @auth_router.get("/google")
-# async def google_login(request: Request):
-#     redirect_uri = settings.GOOGLE_REDIRECT_URI
-#     return await oauth.google.authorize_redirect(request, redirect_uri)
-
-
 @auth_router.get("/google")
 async def google_login(request: Request, role: str = "customer"):
     request.session["role"] = role  # store it in session
@@ -43,6 +39,7 @@ async def google_login(request: Request, role: str = "customer"):
 
 
 @auth_router.get("/google/callback", name="google_callback")
+@limiter.limit("10/minute")
 async def google_callback(request: Request):
     try:
         token = await oauth.google.authorize_access_token(request)
@@ -103,7 +100,8 @@ async def google_callback(request: Request):
 
 
 @auth_router.post("/register", response_model=User)
-async def register(user: UserCreate):
+@limiter.limit("5/minute")
+async def register(request: Request, user: UserCreate):
     try:
         birthday_datetime = datetime.combine(
             user.birthday, datetime.min.time())
@@ -127,7 +125,8 @@ async def register(user: UserCreate):
 
 
 @auth_router.post("/login")
-async def login(creds: LoginSchema):
+@limiter.limit("5/minute")
+async def login(request: Request, creds: LoginSchema):
     user = await prisma.user.find_unique(where={"email": creds.email})
     if not user or not verify_password(creds.password, user.password):
         raise HTTPException(401, "Invalid credentials")
