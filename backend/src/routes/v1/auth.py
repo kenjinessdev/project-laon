@@ -1,16 +1,17 @@
 # routes/auth.py
-from fastapi import APIRouter, HTTPException
+from authlib.integrations.starlette_client import OAuth, OAuthError
+from fastapi import Request, Response, HTTPException, APIRouter
 from src.db.prisma import prisma
 from src.utils.security import hash_password, verify_password
 from src.utils.jwt import create_access_token, create_refresh_token
 from src.models.user import UserCreate, LoginSchema, User
 from datetime import datetime
-from starlette.requests import Request
-from authlib.integrations.starlette_client import OAuth, OAuthError
 from src.core.config import settings
 from prisma.errors import UniqueViolationError
 from src.core.limiter import limiter
-from starlette.requests import Request
+from jose import JWTError
+from src.utils.jwt import decode_token
+
 # from src.models.user import UserOut, LoginSchema
 
 auth_router = APIRouter()
@@ -40,7 +41,7 @@ async def google_login(request: Request, role: str = "customer"):
 
 @auth_router.get("/google/callback", name="google_callback")
 @limiter.limit("10/minute")
-async def google_callback(request: Request):
+async def google_callback(request: Request, response: Response):
     try:
         token = await oauth.google.authorize_access_token(request)
 
@@ -64,7 +65,6 @@ async def google_callback(request: Request):
 
         user = await prisma.user.find_unique(where={"email": email})
         if not user:
-            # get role from session (default to customer)
             role = request.session.get("role", "customer")
 
             # Convert birthday to datetime if available
@@ -81,7 +81,7 @@ async def google_callback(request: Request):
                 "email": email,
                 "profile_image_url": photos.get("url", ""),
                 "password": "",
-                "role": role,  # ✅ use selected role
+                "role": role,
                 "birthday": birthday,
                 "gender": genders.get("value", "unspecified").lower(),
                 "phone_number": phones.get("value", None),
@@ -89,9 +89,21 @@ async def google_callback(request: Request):
                 "suffix": ""
             })
 
+        access_token = create_access_token(user.id)
+        refresh_token = create_refresh_token(user.id)
+
+        # 🍪 e HttpOnly refresh token cookie
+        response.set_cookie(
+            key="refresh_token",
+            value=refresh_token,
+            httponly=True,
+            secure=not settings.DEBUG,  # True in production
+            samesite="lax",
+            max_age=60 * 60 * 24 * settings.REFRESH_TOKEN_EXPIRE_DAYS
+        )
+
         return {
-            "access_token": create_access_token(user.id),
-            "refresh_token": create_refresh_token(user.id),
+            "access_token": access_token,
             "token_type": "bearer"
         }
 
@@ -126,12 +138,45 @@ async def register(request: Request, user: UserCreate):
 
 @auth_router.post("/login")
 @limiter.limit("5/minute")
-async def login(request: Request, creds: LoginSchema):
+async def login(request: Request, response: Response, creds: LoginSchema):
     user = await prisma.user.find_unique(where={"email": creds.email})
     if not user or not verify_password(creds.password, user.password):
         raise HTTPException(401, "Invalid credentials")
+
+    access_token = create_access_token(user.id)
+    refresh_token = create_refresh_token(user.id)
+
+    # ✅ Store refresh token in HttpOnly cookie
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=not settings.DEBUG,
+        samesite="lax",
+        max_age=60 * 60 * 24 * settings.REFRESH_TOKEN_EXPIRE_DAYS
+    )
+
     return {
-        "access_token": create_access_token(user.id),
-        "refresh_token": create_refresh_token(user.id),
+        "access_token": access_token,
+        "token_type": "bearer"
+    }
+
+
+@auth_router.post("/refresh")
+async def refresh_token(request: Request):
+    token = request.cookies.get("refresh_token")
+    if not token:
+        raise HTTPException(401, "No refresh token found")
+
+    try:
+        payload = decode_token(token)
+        user_id = payload.get("sub")
+        if not user_id:
+            raise HTTPException(401, "Invalid token payload")
+    except JWTError:
+        raise HTTPException(401, "Invalid or expired token")
+
+    return {
+        "access_token": create_access_token(user_id),
         "token_type": "bearer"
     }
