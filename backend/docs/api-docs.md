@@ -1,7 +1,7 @@
 
 # 📘 LAON API Documentation
 
-## 🌐 Base URL
+##  Base URL
 
 ```
 http://localhost:8000/api/v1
@@ -11,22 +11,23 @@ http://localhost:8000/api/v1
 
 ## 🧑‍💻 Authentication
 
-> Authentication is based on this youtube video:
-<iframe width="560" height="315" src="https://www.youtube.com/embed/AcYF18oGn6Y" frameborder="0" allowfullscreen></iframe>
+> Authentication is based on this youtube video: [Watch](https://youtu.be/AcYF18oGn6Y)
+[![Watch the video](https://img.youtube.com/vi/AcYF18oGn6Y/maxresdefault.jpg)](https://youtu.be/AcYF18oGn6Y)
 
-### 🔐 Google Login
+
+### Google Login
 
 - **GET** `/auth/google`  
   Redirects to Google OAuth for login.
 
-### 🔁 Google Callback
+### Google Callback
 
 - **GET** `/auth/google/callback`  
   Handles the callback from Google after user authentication.
 
 ---
 
-### 📝 Register
+### Register
 
 - **POST** `/auth/register`  
   Registers a new user.
@@ -54,7 +55,7 @@ http://localhost:8000/api/v1
 
 ---
 
-### 🔑 Login
+### Login
 
 - **POST** `/auth/login`  
   Authenticates a user and returns an access token. Also sets a `refresh_token` in HttpOnly cookie.
@@ -77,7 +78,7 @@ http://localhost:8000/api/v1
 
 ---
 
-### ♻️ Refresh Token
+### Refresh Token
 
 - **POST** `/auth/refresh`  
   Issues a new access token using the refresh token from an HttpOnly cookie.
@@ -92,9 +93,9 @@ http://localhost:8000/api/v1
 
 ---
 
-## 📊 Dashboards
+## Dashboards
 
-### 👨‍🌾 Farmer Dashboard
+### Farmer Dashboard
 
 - **GET** `/farmer/dashboard`  
   Secured route. Requires Bearer Token.
@@ -106,7 +107,7 @@ Authorization: Bearer <access_token>
 
 ---
 
-### 👤 Customer Dashboard
+### Customer Dashboard
 
 - **GET** `/customer/dashboard`  
   Secured route. Requires Bearer Token.
@@ -118,9 +119,9 @@ Authorization: Bearer <access_token>
 
 ---
 
-## 🙋 Get Current User
+## Get Current User
 
-### 👁️ Me
+### Me
 
 - **GET** `/users/me`  
   Returns info about the currently authenticated user.
@@ -130,14 +131,6 @@ Authorization: Bearer <access_token>
 Authorization: Bearer <access_token>
 ```
 
----
-
-## 🏠 Root
-
-- **GET** `/`  
-  Base root endpoint. (Can be used for health checks or welcome messages.)
-
----
 
 ## 🚫 Rate Limiting
 
