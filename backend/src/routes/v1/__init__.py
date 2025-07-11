@@ -10,3 +10,8 @@ v1_router.include_router(auth_router, prefix="/auth")
 v1_router.include_router(farmer_router, prefix="/farmer")
 v1_router.include_router(customer_route, prefix="/customer")
 v1_router.include_router(user_router, prefix="/users")
+
+
+@v1_router.get("/")
+def v1():
+    return {"message": "Welcome to laon version 1"}

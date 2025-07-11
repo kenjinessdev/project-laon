@@ -68,4 +68,7 @@ uvicorn src.main:app --reload
 ```
 then go to the link provided
 
+## 📘 API Documentation
+
+For full API reference, see the [API Docs](./backend/docs/api-docs.md).
 
