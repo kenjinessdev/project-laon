@@ -1,13 +1,13 @@
 from fastapi import APIRouter
-from src.routes.auth import auth_router
-from src.routes.protected import role_router
+from src.routes.v1 import v1_router
 
 router = APIRouter()
 
-router.include_router(auth_router, prefix="/auth")
-router.include_router(role_router)
+router.include_router(v1_router, prefix="/api/v1")
 
 
 @router.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return {
+        "LAON-API": "Welcome",
+    }

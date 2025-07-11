@@ -5,6 +5,8 @@ from fastapi.middleware.gzip import GZipMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from src.core.config import settings
 from fastapi import FastAPI
+from slowapi.errors import RateLimitExceeded
+from src.core.limiter import limiter, rate_limit_handler
 
 app = FastAPI(
     title="LAON"
@@ -20,6 +22,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, rate_limit_handler)
 
 app.include_router(api_router)
 
