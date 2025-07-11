@@ -41,7 +41,7 @@ async def test_register_and_login(client: AsyncClient):
     await prisma.user.delete_many(where={"email": test_email})
 
     # Register user
-    response = await client.post("/auth/register", json=register_data)
+    response = await client.post("/api/v1/auth/register", json=register_data)
     print("REGISTER RESPONSE:", response.status_code, response.text)
     assert response.status_code == 200
 
@@ -51,7 +51,7 @@ async def test_register_and_login(client: AsyncClient):
         "password": "securepass"
     }
 
-    response = await client.post("/auth/login", json=login_data)
+    response = await client.post("/api/v1/auth/login", json=login_data)
     print("LOGIN RESPONSE:", response.status_code, response.text)
     assert response.status_code == 200
     assert "access_token" in response.json()
@@ -67,26 +67,34 @@ async def test_invalid_login(client: AsyncClient):
         "password": "wrongpass"
     }
 
-    response = await client.post("/auth/login", json=login_data)
+    response = await client.post("/api/v1/auth/login", json=login_data)
     print("INVALID LOGIN RESPONSE:", response.status_code, response.text)
     assert response.status_code == 401
     assert response.json()["detail"] == "Invalid credentials"
 
 
 @pytest.mark.asyncio
-@patch("src.routes.auth.oauth.google.get", new_callable=AsyncMock)
-@patch("src.routes.auth.oauth.google.authorize_access_token", new_callable=AsyncMock)
+@patch("src.routes.v1.auth.oauth.google.get", new_callable=AsyncMock)
+@patch("src.routes.v1.auth.oauth.google.authorize_access_token", new_callable=AsyncMock)
 async def test_mocked_google_callback(mock_authorize_access_token, mock_google_get, client: AsyncClient):
     # Mock the token response
     mock_authorize_access_token.return_value = {"access_token": "fake-token"}
 
     # Mock the response object from oauth.google.get(...)
     mock_response = MagicMock()
+    # mock_response.json.return_value = {
+    #     "email": "mockuser@example.com",
+    #     "given_name": "Mock",
+    #     "family_name": "User",
+    #     "picture": "https://example.com/image.jpg"
+    # }
     mock_response.json.return_value = {
-        "email": "mockuser@example.com",
-        "given_name": "Mock",
-        "family_name": "User",
-        "picture": "https://example.com/image.jpg"
+        "names": [{"givenName": "Mock", "familyName": "User"}],
+        "emailAddresses": [{"value": "mockuser@example.com"}],
+        "photos": [{"url": "https://example.com/image.jpg"}],
+        "birthdays": [{"date": {"year": 2000, "month": 1, "day": 1}}],
+        "genders": [{"value": "male"}],
+        "phoneNumbers": [{"value": "+1234567890"}]
     }
     mock_google_get.return_value = mock_response
 
@@ -94,7 +102,7 @@ async def test_mocked_google_callback(mock_authorize_access_token, mock_google_g
     await prisma.user.delete_many(where={"email": "mockuser@example.com"})
 
     # Call the callback endpoint (simulate Google redirect)
-    response = await client.get("/auth/google/callback?code=fake-code")
+    response = await client.get("/api/v1/auth/google/callback?code=fake-code")
     assert response.status_code == 200
     json_data = response.json()
     assert "access_token" in json_data
@@ -102,3 +110,5 @@ async def test_mocked_google_callback(mock_authorize_access_token, mock_google_g
 
     # Post-cleanup
     await prisma.user.delete_many(where={"email": "mockuser@example.com"})
+    print(response.status_code)
+    print(response.text)

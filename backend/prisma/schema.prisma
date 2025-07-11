@@ -1,6 +1,7 @@
 generator client {
-  provider  = "prisma-client-py"
-  interface = "asyncio"
+  provider                    = "prisma-client-py"
+  interface                   = "asyncio"
+  enable_experimental_decimal = true
 }
 
 datasource db {
@@ -8,21 +9,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ==================== User Models ====================
 model User {
   id                String    @id @default(uuid()) @db.Uuid
   first_name        String    @db.VarChar(100)
   middle_name       String    @db.VarChar(100)
   last_name         String    @db.VarChar(100)
-  suffix            String    @db.VarChar(100)
+  suffix            String?   @db.VarChar(100)
   profile_image_url String?   @db.Text
   email             String    @unique @db.VarChar(100)
   password          String    @db.VarChar(128)
   phone_number      String?   @unique @db.VarChar(50)
-  gender            String    @db.VarChar(50)
+  gender            String?   @db.VarChar(50)
   role              Role
   birthday          DateTime
   created_at        DateTime  @default(now())
-  Address           Address[]
+  addresses         Address[]
+  products          Product[]
+  reviews           Review[]
+  cart              Cart[]
 
   @@map("users")
 }
@@ -33,7 +38,7 @@ enum Role {
 }
 
 model Address {
-  id          Int     @id @default(autoincrement()) @map("address_id")
+  id          Int     @id @default(autoincrement())
   user_id     String  @db.Uuid
   street      String  @db.Text
   street2     String? @db.Text // ✅ Make optional if it's not always used
@@ -45,4 +50,85 @@ model Address {
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("addresses")
+}
+
+// ==================== Product Models ====================
+model Product {
+  id             String  @id @default(uuid()) @db.Uuid
+  user_id        String  @db.Uuid
+  name           String  @db.VarChar(100)
+  description    String  @db.Text
+  category_id    Int     @db.Integer
+  unit           String  @db.VarChar(20)
+  price_per_unit Decimal
+  stock_quantity Int     @db.Integer
+
+  user     User            @relation(fields: [user_id], references: [id])
+  category ProductCategory @relation(fields: [category_id], references: [id])
+
+  images     ProductImage[]
+  reviews    Review[]
+  cart_items CartItem[]
+
+  @@map("products")
+}
+
+model ProductCategory {
+  id       Int       @id @default(autoincrement())
+  name     String    @db.VarChar(100)
+  products Product[]
+
+  @@map("product_categories")
+}
+
+model ProductImage {
+  id               String   @id @default(uuid()) @db.Uuid
+  product_id       String   @db.Uuid
+  image_public_url String   @db.Text
+  uploaded_at      DateTime @default(now())
+
+  product Product @relation(fields: [product_id], references: [id])
+
+  @@map("product_images")
+}
+
+model Review {
+  id          Int      @id @default(autoincrement())
+  customer_id String   @db.Uuid
+  product_id  String   @db.Uuid
+  rating      Int      @db.Integer
+  comment     String?  @db.Text
+  created_at  DateTime @default(now())
+
+  customer User    @relation(fields: [customer_id], references: [id])
+  product  Product @relation(fields: [product_id], references: [id])
+
+  @@map("reviews")
+}
+
+// ==================== Product Models ====================
+model Cart {
+  id          String   @id @default(uuid()) @db.Uuid
+  customer_id String   @db.Uuid
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now())
+  is_active   Boolean
+
+  customer   User       @relation(fields: [customer_id], references: [id])
+  cart_items CartItem[]
+
+  @@map("cart")
+}
+
+model CartItem {
+  id         String   @id @default(uuid()) @db.Uuid
+  cart_id    String   @db.Uuid
+  product_id String   @db.Uuid
+  quantity   Int      @db.Integer
+  added_at   DateTime @default(now())
+
+  cart    Cart    @relation(fields: [cart_id], references: [id])
+  product Product @relation(fields: [product_id], references: [id])
+
+  @@map("cart_items")
 }

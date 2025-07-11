@@ -20,7 +20,7 @@ class Settings(BaseSettings):  # type: ignore
     FACEBOOK_CLIENT_SECRET: str
     FACEBOOK_REDIRECT_URI: str
 
-    DEBUG: bool = False
+    DEBUG: bool = True
 
     class Config:
         env_file = ".env"
