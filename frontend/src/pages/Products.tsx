@@ -1,12 +1,10 @@
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardAction,
   CardContent,
-  CardDescription,
   CardFooter,
-  CardHeader,
   CardTitle,
+  CardAction,
 } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import type { Product } from "@/lib/types";
@@ -23,12 +21,36 @@ const Products = () => {
       </div>
 
       <div className="grid grid-cols-3 grid-rows-3 gap-12">
-        <ProductCard name="testProduct" image="https://placehold.co/600x400" />
-        <ProductCard name="testProduct" image="https://placehold.co/600x400" />
-        <ProductCard name="testProduct" image="https://placehold.co/600x400" />
-        <ProductCard name="testProduct" image="https://placehold.co/600x400" />
-        <ProductCard name="testProduct" image="https://placehold.co/600x400" />
-        <ProductCard name="testProduct" image="https://placehold.co/600x400" />
+        <ProductCard
+          name="testProduct"
+          image="https://placehold.co/600x400"
+          description="testDescription"
+        />
+        <ProductCard
+          name="testProduct"
+          image="https://placehold.co/600x400"
+          description="testDescription"
+        />
+        <ProductCard
+          name="testProduct"
+          image="https://placehold.co/600x400"
+          description="testDescription"
+        />
+        <ProductCard
+          name="testProduct"
+          image="https://placehold.co/600x400"
+          description="testDescription"
+        />
+        <ProductCard
+          name="testProduct"
+          image="https://placehold.co/600x400"
+          description="testDescription"
+        />
+        <ProductCard
+          name="testProduct"
+          image="https://placehold.co/600x400"
+          description="testDescription"
+        />
       </div>
     </section>
   );
@@ -37,13 +59,18 @@ const Products = () => {
 const ProductCard = ({ name, image }: Product) => {
   return (
     <Card className="p-4">
-      <CardDescription>
+      <CardContent>
         <div>
           <img src={image} />
         </div>
-      </CardDescription>
+      </CardContent>
       <CardTitle>{name}</CardTitle>
-      <Button className="cursor-pointer">View Details</Button>
+      <CardFooter>
+        <CardAction>
+          {" "}
+          <Button className="cursor-pointer">View Details</Button>
+        </CardAction>
+      </CardFooter>
     </Card>
   );
 };
