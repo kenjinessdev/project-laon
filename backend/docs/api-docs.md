@@ -19,8 +19,21 @@ http://localhost:8000/api/v1
 
 - **GET** `/auth/google`  
   Redirects to Google OAuth for login.
+  - Register user as a `customer` in default
+  - `/auth/google?role=farmer` to specify the role of the user
 
 ### Google Callback
+
+- **GET** `/auth/google/callback`  
+  Handles the callback from Google after user authentication.
+
+---
+
+### Facebook Login
+- **GET** `/auth/facebook`
+  Redirects to Facebook OAuth for login
+  - Register user as a `customer` in default
+  - `/auth/facebook?role=farmer` to specify the role of the user
 
 - **GET** `/auth/google/callback`  
   Handles the callback from Google after user authentication.
