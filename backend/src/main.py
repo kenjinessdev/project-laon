@@ -1,4 +1,5 @@
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
 from src.routes.routes import router as api_router
 from src.db.prisma import prisma
 from fastapi.middleware.gzip import GZipMiddleware
@@ -7,6 +8,7 @@ from src.core.config import settings
 from fastapi import FastAPI
 from slowapi.errors import RateLimitExceeded
 from src.core.limiter import limiter, rate_limit_handler
+from src.core.exception_handlers import validation_exception_handler
 
 app = FastAPI(
     title="LAON"
@@ -25,6 +27,7 @@ app.add_middleware(
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, rate_limit_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
 
 app.include_router(api_router)
 
