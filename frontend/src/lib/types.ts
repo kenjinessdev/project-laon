@@ -5,15 +5,18 @@ export interface Product {
 }
 
 export type OrderStatus =
-  | "paid"
-  | "complete"
-  | "to pay"
-  | "to ship"
-  | "to receive"
-  | "to rate";
+  | "PAID"
+  | "COMPLETE"
+  | "PENDING"
+  | "TO SHIP"
+  | "TO RECEIVE"
+  | "TO RATE";
 
 export interface Order {
+  customerImage: string;
+  orderCode: string;
   customerName: string;
   orderPrice: number;
   orderStatus: OrderStatus;
+  orderDate: string;
 }

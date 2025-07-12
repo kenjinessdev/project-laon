@@ -36,21 +36,21 @@ const OverlayMenu = () => {
       <div className="flex flex-col p-6 pt-20 space-y-6">
         <Link
           to="/dashboard"
-          className="cursor-pointer text-lg hover:text-violet-light-1 transition-colors duration-200 py-3 border-b border-violet-light-8"
+          className="cursor-pointer text-lg transition-colors duration-200 py-3"
         >
-          <h2>dashboard</h2>
+          <h2>Dashboard</h2>
         </Link>
         <Link
           to="/orders"
-          className="cursor-pointer text-lg hover:text-violet-light-1 transition-colors duration-200 py-3 border-b border-violet-light-8"
+          className="cursor-pointer text-lg transition-colors duration-200 py-3"
         >
-          <h2>orders</h2>
+          <h2>Orders</h2>
         </Link>
         <Link
           to="/products"
-          className="cursor-pointer text-lg hover:text-violet-light-1 transition-colors duration-200 py-3 border-b border-violet-light-8"
+          className="cursor-pointer text-lg transition-colors duration-200 py-3"
         >
-          <h2>products</h2>
+          <h2>Products</h2>
         </Link>
       </div>
     </nav>

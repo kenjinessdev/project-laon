@@ -47,7 +47,7 @@ const Dashboard = () => {
           </Card>
         </div>
         <div className="row-start-2">
-          <Card className="px-6">
+          <Card className="px-6 ">
             <CardTitle className="font-bold text-lg">Low Stock</CardTitle>
             <CardDescription className="flex flex-row justify-between items-center">
               1
@@ -57,8 +57,10 @@ const Dashboard = () => {
         </div>
         <div className="col-span-2 row-start-3">
           <Card className="px-6">
-            <ChartColumn />
-            <CardTitle className="font-bold text-lg">Sales Chart</CardTitle>
+            <CardTitle className="font-bold text-lg flex flex-row items-center">
+              <ChartColumn />
+              Sales Chart
+            </CardTitle>
             <CardDescription>
               <div className="flex flex-row justify-between">
                 <p>This week</p>
