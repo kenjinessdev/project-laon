@@ -1,12 +1,56 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+/* first accent */
 @import "@radix-ui/colors/orange.css";
 @import "@radix-ui/colors/orange-dark.css";
+
+/* secondary accent */
+@import "@radix-ui/colors/grass.css";
+@import "@radix-ui/colors/grass-dark.css";
+
+/* semantic: info, tips*/
+@import "@radix-ui/colors/blue.css";
+@import "@radix-ui/colors/blue-dark.css";
+
+/*semantic: alert, danger, error*/
+@import "@radix-ui/colors/red.css";
+@import "@radix-ui/colors/red-dark.css";
+
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
+  /* start to overwrite tailwind defaults to radix-ui */
+  --color-red-*: initial;
+  --color-red-1: var(--red-1);
+  --color-red-2: var(--red-2);
+  --color-red-3: var(--red-3);
+  --color-red-4: var(--red-4);
+  --color-red-5: var(--red-5);
+  --color-red-6: var(--red-6);
+  --color-red-7: var(--red-7);
+  --color-red-8: var(--red-8);
+  --color-red-9: var(--red-9);
+  --color-red-10: var(--red-10);
+  --color-red-11: var(--red-11);
+  --color-red-12: var(--red-12);
+
+  --color-green-*: initial;
+  --color-green-1: var(--grass-1);
+  --color-green-2: var(--grass-2);
+  --color-green-3: var(--grass-3);
+  --color-green-4: var(--grass-4);
+  --color-green-5: var(--grass-5);
+  --color-green-6: var(--grass-6);
+  --color-green-7: var(--grass-7);
+  --color-green-8: var(--grass-8);
+  --color-green-9: var(--grass-9);
+  --color-green-10: var(--grass-10);
+  --color-green-11: var(--grass-11);
+  --color-green-12: var(--grass-12);
+
   --color-orange-*: initial;
   --color-orange-1: var(--orange-1);
   --color-orange-2: var(--orange-2);
@@ -21,6 +65,23 @@
   --color-orange-11: var(--orange-11);
   --color-orange-12: var(--orange-12);
 
+  --color-blue-*: initial;
+  --color-blue-1: var(--blue-1);
+  --color-blue-2: var(--blue-2);
+  --color-blue-3: var(--blue-3);
+  --color-blue-4: var(--blue-4);
+  --color-blue-5: var(--blue-5);
+  --color-blue-6: var(--blue-6);
+  --color-blue-7: var(--blue-6);
+  --color-blue-8: var(--blue-8);
+  --color-blue-9: var(--blue-9);
+  --color-blue-10: var(--blue-10);
+  --color-blue-11: var(--blue-11);
+  --color-blue-12: var(--blue-12);
+
+  /* end to overwrite tailwind defaults to radix-ui */
+
+  /* custom variables */
   --app-bg: var(--color-orange-1);
   --subtle-bg: var(--color-orange-2);
   --ui-element: var(--color-orange-3);
@@ -35,6 +96,7 @@
   --component-bg-clicked: var(--color-orange-11);
   --component-text: var(--color-orange-12);
 
+  /* typography scale: major third */
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
   --text-base: 1rem;
@@ -49,6 +111,8 @@
   --text-8xl: 7.451rem;
   --text-9xl: 9.313rem;
 }
+
+/* @utility directive: https://tailwindcss.com/docs/functions-and-directives#utility-directive */
 
 @utility app-bg {
   background-color: var(--app-bg) !important;
@@ -86,6 +150,7 @@
   color: var(--component-text) !important;
 }
 
+/* referencing other variables: https://tailwindcss.com/docs/colors#referencing-other-variables*/
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -166,7 +231,7 @@
   /* Keep destructive color for dark mode */
   --destructive: oklch(0.704 0.191 22.216);
 }
-
+/* adding own base styles: https://tailwindcss.com/docs/preflight#extending-preflight */
 @layer base {
   * {
     @apply border-border outline-ring/50;

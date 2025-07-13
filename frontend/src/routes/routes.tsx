@@ -7,6 +7,7 @@ import { Layout } from "./Layout";
 import Dashboard from "@/pages/Dashboard";
 import Products from "@/pages/Products";
 import Orders from "@/pages/Orders";
+import NotFound from "@/pages/NotFound";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -14,6 +15,7 @@ export const router = createBrowserRouter(
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/products" element={<Products />} />
       <Route path="/orders" element={<Orders />} />
+      <Route path="*" element={<NotFound />} />
     </Route>
   )
 );
