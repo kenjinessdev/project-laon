@@ -42,7 +42,7 @@ GOOGLE_REDIRECT_URI=http://localhost:8000/api/v1/auth/google/callback
 
 FACEBOOK_CLIENT_ID=your-facebook-app-id
 FACEBOOK_CLIENT_SECRET=your-facebook-app-secret
-FACEBOOK_REDIRECT_URI=http://localhost:8000/api/v1/auth/google/callback
+FACEBOOK_REDIRECT_URI=http://localhost:8000/api/v1/auth/facebook/callback
 
 JWT_SECRET="mcDRfPao1LsKPTeUDJJO96URrhiTi2BeYIh-8ihjdZU"
 SESSION_SECRET="m6aDYVIED0zNcvYLvStiJm6EjBxSRIKUfLZDBY2ArTY"

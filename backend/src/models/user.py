@@ -32,7 +32,7 @@ class UserBase(BaseModel):
     profile_image_url: Optional[str] = None
     email: EmailStr
     password: constr(min_length=8)
-    phone_number: Optional[str] = None  # Define stricter constraints if needed
+    phone_number: str
     # You may use Literal for stricter values
     gender: Optional[constr(max_length=50)] = None
     birthday: date
