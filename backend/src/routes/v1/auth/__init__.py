@@ -14,6 +14,7 @@ from jose import JWTError
 from src.utils.jwt import decode_token
 from src.routes.v1.auth.facebook_auth import facebook_router
 from src.routes.v1.auth.google_auth import google_router
+import re
 
 
 # from src.models.user import UserOut, LoginSchema
@@ -24,9 +25,9 @@ auth_router.include_router(facebook_router)
 auth_router.include_router(google_router)
 
 
-@auth_router.post("/register", response_model=User)
+@auth_router.post("/register")
 @limiter.limit("5/minute")
-async def register(request: Request, user: UserCreate):
+async def register(request: Request,  response: Response, user: UserCreate):
     try:
         birthday_datetime = datetime.combine(
             user.birthday, datetime.min.time())
@@ -43,10 +44,39 @@ async def register(request: Request, user: UserCreate):
             "birthday": birthday_datetime,
             "role": user.role
         })
-        return new_user
 
-    except UniqueViolationError:
-        raise HTTPException(status_code=400, detail="Email already registered")
+        # Generate tokens
+        access_token = create_access_token(new_user.id)
+        refresh_token = create_refresh_token(new_user.id)
+
+        # Store refresh token in secure cookie
+        response.set_cookie(
+            key="refresh_token",
+            value=refresh_token,
+            httponly=True,
+            secure=not settings.DEBUG,
+            samesite="lax",
+            max_age=60 * 60 * 24 * settings.REFRESH_TOKEN_EXPIRE_DAYS,
+        )
+
+        return {
+            "access_token": access_token,
+            "token_type": "bearer"
+        }
+
+    except UniqueViolationError as e:
+        message = str(e).lower()
+
+        print("⚠️ UniqueViolationError:", message)
+
+        if "email" in message:
+            detail = "Email already registered"
+        elif "phone_number" in message:
+            detail = "Phone number already registered"
+        else:
+            detail = "A unique field is already in use"
+
+        raise HTTPException(status_code=400, detail=detail)
 
 
 @auth_router.post("/login")

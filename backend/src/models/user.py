@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, constr
+from pydantic import BaseModel, EmailStr, constr, HttpUrl
 from datetime import datetime, date
 from typing import Optional, Literal
 
@@ -50,6 +50,22 @@ class User(UserBase):
 
     class Config:
         from_attributes = True
+
+
+class UserUpdate(BaseModel):
+    first_name: Optional[str] = None
+    middle_name: Optional[str] = None
+    last_name: Optional[str] = None
+    suffix: Optional[str] = None
+    profile_image_url: Optional[HttpUrl] = None
+    email: Optional[EmailStr] = None
+    phone_number: Optional[str] = None
+    gender: Optional[str] = None
+    birthday: Optional[date] = None
+
+
+class UserEmailUpdate(BaseModel):
+    email: EmailStr
 
 
 class LoginSchema(BaseModel):

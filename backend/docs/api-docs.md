@@ -144,12 +144,9 @@ Authorization: Bearer <access_token>
 Authorization: Bearer <access_token>
 ```
 
+### Update User Info
 
-## 🚫 Rate Limiting
-
-| Endpoint                 | Limit          |
-|--------------------------|----------------|
-| `/auth/login`            | 5 requests/min |
-| `/auth/register`         | 5 requests/min |
-| `/auth/google/callback`  | 10 requests/min |
+- **PUT** `/users/me`
+  Updates user info
+  Returns 400 error if email or phone number is already existing in db
 

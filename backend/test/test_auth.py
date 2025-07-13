@@ -75,8 +75,15 @@ async def test_invalid_login(client: AsyncClient):
 
 @pytest.mark.asyncio
 @patch("src.core.oauth.oauth.google.get", new_callable=AsyncMock)
-@patch("src.core.oauth.oauth.google.authorize_access_token", new_callable=AsyncMock)
-async def test_mocked_google_callback(mock_authorize_access_token, mock_google_get, client: AsyncClient):
+@patch(
+    "src.core.oauth.oauth.google.authorize_access_token",
+    new_callable=AsyncMock
+)
+async def test_mocked_google_callback(
+        mock_authorize_access_token,
+        mock_google_get,
+        client: AsyncClient
+):
     # Mock the token response
     mock_authorize_access_token.return_value = {"access_token": "fake-token"}
 
