@@ -1,9 +1,4 @@
-import {
-  Card,
-  CardTitle,
-  CardAction,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardTitle, CardDescription } from "@/components/ui/card";
 import {
   ShoppingCart,
   PhilippinePeso,
