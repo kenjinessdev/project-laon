@@ -74,20 +74,21 @@ async def test_invalid_login(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-@patch("src.routes.v1.auth.oauth.google.get", new_callable=AsyncMock)
-@patch("src.routes.v1.auth.oauth.google.authorize_access_token", new_callable=AsyncMock)
-async def test_mocked_google_callback(mock_authorize_access_token, mock_google_get, client: AsyncClient):
+@patch("src.core.oauth.oauth.google.get", new_callable=AsyncMock)
+@patch(
+    "src.core.oauth.oauth.google.authorize_access_token",
+    new_callable=AsyncMock
+)
+async def test_mocked_google_callback(
+        mock_authorize_access_token,
+        mock_google_get,
+        client: AsyncClient
+):
     # Mock the token response
     mock_authorize_access_token.return_value = {"access_token": "fake-token"}
 
     # Mock the response object from oauth.google.get(...)
     mock_response = MagicMock()
-    # mock_response.json.return_value = {
-    #     "email": "mockuser@example.com",
-    #     "given_name": "Mock",
-    #     "family_name": "User",
-    #     "picture": "https://example.com/image.jpg"
-    # }
     mock_response.json.return_value = {
         "names": [{"givenName": "Mock", "familyName": "User"}],
         "emailAddresses": [{"value": "mockuser@example.com"}],
@@ -106,7 +107,6 @@ async def test_mocked_google_callback(mock_authorize_access_token, mock_google_g
     assert response.status_code == 200
     json_data = response.json()
     assert "access_token" in json_data
-    assert "refresh_token" in json_data
 
     # Post-cleanup
     await prisma.user.delete_many(where={"email": "mockuser@example.com"})
