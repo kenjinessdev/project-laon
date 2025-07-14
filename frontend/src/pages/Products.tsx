@@ -17,6 +17,7 @@ const Products = () => {
         <h1 className="font-bold text-2xl">Products</h1>
         <Button className="cursor-pointer">
           <Plus></Plus>
+          Add Product
         </Button>
       </div>
 
