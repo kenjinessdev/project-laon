@@ -139,6 +139,8 @@ Authorization: Bearer <access_token>
 - **GET** `/users/me`  
   Returns info about the currently authenticated user.
 
+
+
 **Headers**:
 ```
 Authorization: Bearer <access_token>
@@ -150,3 +152,22 @@ Authorization: Bearer <access_token>
   Updates user info
   Returns 400 error if email or phone number is already existing in db
 
+  - Requires Header
+  `Authorization: Bearer <access_token>`
+
+
+## 🔐 Change Password
+
+**PUT** `/api/v1/users/me/password`
+
+Allows an authenticated user to change their password by providing the current and new passwords.
+
+### Requires
+`Authorization: Bearer <access_token>`
+
+### 📥 Request Body
+```json
+{
+  "current_password": "oldPassword123",
+  "new_password": "newPassword456"
+}

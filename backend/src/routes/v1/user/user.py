@@ -4,8 +4,9 @@ from src.dependencies.auth import get_current_user
 from prisma.models import User
 from prisma.errors import UniqueViolationError
 from src.db.prisma import prisma
-from src.models.user import UserUpdate, UserEmailUpdate
+from src.models.user import UserUpdate, PasswordChangeRequest
 from src.core.limiter import limiter
+from src.utils.security import hash_password, verify_password
 
 user_router = APIRouter()
 
@@ -49,3 +50,27 @@ async def update_profile(
             status_code=400, detail="Email or phone number already in use.")
 
     return updated_user
+
+
+@user_router.put("/me/password")
+async def change_password(
+    payload: PasswordChangeRequest,
+    current_user: User = Depends(get_current_user)
+):
+    user = await prisma.user.find_unique(where={"id": current_user.id})
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if not verify_password(payload.current_password, user.password):
+        raise HTTPException(
+            status_code=400, detail="Incorrect current password")
+
+    new_hashed_password = hash_password(payload.new_password)
+
+    await prisma.user.update(
+        where={"id": current_user.id},
+        data={"password": new_hashed_password}
+    )
+
+    return {"message": "Password updated successfully"}

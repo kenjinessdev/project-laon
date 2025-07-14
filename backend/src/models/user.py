@@ -31,7 +31,7 @@ class UserBase(BaseModel):
     suffix: Optional[constr(max_length=100)] = None
     profile_image_url: Optional[str] = None
     email: EmailStr
-    password: constr(min_length=8)
+    password: constr(min_length=6)
     phone_number: str
     # You may use Literal for stricter values
     gender: Optional[constr(max_length=50)] = None
@@ -66,6 +66,11 @@ class UserUpdate(BaseModel):
 
 class UserEmailUpdate(BaseModel):
     email: EmailStr
+
+
+class PasswordChangeRequest(BaseModel):
+    current_password: constr(min_length=6)
+    new_password: constr(min_length=6)
 
 
 class LoginSchema(BaseModel):
