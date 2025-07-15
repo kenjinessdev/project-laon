@@ -9,18 +9,18 @@ from datetime import datetime
 from src.utils.security import hash_password
 
 
-@pytest_asyncio.fixture(scope="function")
-async def client():
-    if not prisma.is_connected():
-        await prisma.connect()
-
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as ac:
-        yield ac
-
-    if prisma.is_connected():
-        await prisma.disconnect()
-
+# @pytest_asyncio.fixture(scope="function")
+# async def client():
+#     if not prisma.is_connected():
+#         await prisma.connect()
+#
+#     transport = ASGITransport(app=app)
+#     async with AsyncClient(transport=transport, base_url="http://test") as ac:
+#         yield ac
+#
+#     if prisma.is_connected():
+#         await prisma.disconnect()
+#
 
 @pytest.mark.asyncio
 async def test_update_user_profile(client):  # Use the fixture here
