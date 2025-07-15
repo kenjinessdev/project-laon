@@ -1,27 +1,7 @@
 from pydantic import BaseModel, EmailStr, constr, HttpUrl
 from datetime import datetime, date
 from typing import Optional, Literal
-
-
-class AddressBase(BaseModel):
-    street: Optional[str] = None
-    street2: Optional[str] = None
-    city: Optional[constr(max_length=50)] = None
-    region: Optional[constr(max_length=50)] = None
-    postal_code: Optional[constr(max_length=20)] = None
-    is_primary: Optional[bool] = False
-
-
-class AddressCreate(AddressBase):
-    user_id: int
-
-
-class Address(AddressBase):
-    address_id: int
-    user_id: int
-
-    class Config:
-        from_attributes = True
+from src.models.address import Address
 
 
 class UserBase(BaseModel):

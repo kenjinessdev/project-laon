@@ -1,11 +1,10 @@
 
 # routes/auth.py
-from authlib.integrations.starlette_client import OAuthError
 from fastapi import Request, Response, HTTPException, APIRouter
 from src.db.prisma import prisma
 from src.utils.security import hash_password, verify_password
 from src.utils.jwt import create_access_token, create_refresh_token
-from src.models.user import UserCreate, LoginSchema, User
+from src.models.user import UserCreate, LoginSchema
 from datetime import datetime
 from src.core.config import settings
 from prisma.errors import UniqueViolationError
@@ -14,7 +13,6 @@ from jose import JWTError
 from src.utils.jwt import decode_token
 from src.routes.v1.auth.facebook_auth import facebook_router
 from src.routes.v1.auth.google_auth import google_router
-import re
 
 
 # from src.models.user import UserOut, LoginSchema
