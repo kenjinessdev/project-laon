@@ -2,6 +2,7 @@
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
 from src.core.config import settings
+from fastapi import Response
 
 
 def create_token(data: dict, expires_delta: timedelta):
@@ -31,3 +32,19 @@ def decode_token(token: str):
         return jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM])
     except JWTError as e:
         raise JWTError(f"Token decoding failed: {str(e)}")
+
+
+def issue_tokens(user_id: str, response: Response):
+    access_token = create_access_token(user_id)
+    refresh_token = create_refresh_token(user_id)
+
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=not settings.DEBUG,
+        samesite="lax",
+        max_age=60 * 60 * 24 * settings.REFRESH_TOKEN_EXPIRE_DAYS,
+    )
+
+    return access_token

@@ -54,18 +54,32 @@ model Address {
 }
 
 // ==================== Product Models ====================
-model Product {
-  id             String  @id @default(uuid()) @db.Uuid
-  user_id        String  @db.Uuid
-  name           String  @db.VarChar(100)
-  description    String  @db.Text
-  category_id    Int     @db.Integer
-  unit           String  @db.VarChar(20)
-  price_per_unit Decimal
-  stock_quantity Int     @db.Integer
+enum ProductStatus {
+  draft
+  active
+  archived
+  sold
+}
 
-  user     User            @relation(fields: [user_id], references: [id])
-  category ProductCategory @relation(fields: [category_id], references: [id])
+enum ProductVisibility {
+  public
+  private
+}
+
+model Product {
+  id             String            @id @default(uuid()) @db.Uuid
+  user_id        String            @db.Uuid
+  name           String            @db.VarChar(100)
+  description    String            @db.Text
+  category_id    Int?              @db.Integer
+  unit           String            @db.VarChar(20)
+  status         ProductStatus     @default(active) // Enum preferred if available
+  visibility     ProductVisibility @default(public)
+  price_per_unit Decimal
+  stock_quantity Int               @db.Integer
+
+  user     User             @relation(fields: [user_id], references: [id])
+  category ProductCategory? @relation(fields: [category_id], references: [id])
 
   images     ProductImage[]
   reviews    Review[]
@@ -73,6 +87,7 @@ model Product {
 
   @@map("products")
 }
+
 
 model ProductCategory {
   id       Int       @id @default(autoincrement())

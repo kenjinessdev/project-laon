@@ -17,9 +17,9 @@ class AddressBase(BaseModel):
     barangay: str
     city: constr(max_length=50)
     region: constr(max_length=50)
-    postal_code: constr(max_length=20)
     postal_code: PostalCode
     user: Optional[Any] = None
+    is_primary: bool
 
 
 class AddressCreate(AddressBase):

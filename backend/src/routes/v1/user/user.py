@@ -78,7 +78,9 @@ async def change_password(
 
 
 @user_router.post("/me/address", response_model=Address)
-async def add_address(
+@limiter.limit("5/minute")
+async def create_address(
+    request: Request,
     payload: AddressIn,
     current_user: User = Depends(get_current_user)
 ):
@@ -104,7 +106,9 @@ async def add_address(
 
 
 @user_router.put("/me/address/{address_id}", response_model=Address)
+@limiter.limit("5/minute")
 async def update_address(
+    request: Request,
     address_id: int,
     updated_data: AddressUpdate,
     current_user: User = Depends(get_current_user)
@@ -135,6 +139,7 @@ async def update_address(
 
 @user_router.delete("/me/address/{address_id}")
 async def delete_address(
+    request: Request,
     address_id: int,
     current_user: User = Depends(get_current_user)
 ):
@@ -143,7 +148,11 @@ async def delete_address(
     return {"detail": "Address deleted successfully"}
 
 
-async def is_address_existing(address_id: int, current_user_id: str):
+async def is_address_existing(
+    request: Request,
+    address_id: int,
+    current_user_id: str
+):
     address = await prisma.address.find_unique(
         where={"id": address_id},
         include={"user": True}

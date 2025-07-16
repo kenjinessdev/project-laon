@@ -21,7 +21,7 @@ from unittest.mock import AsyncMock, patch, MagicMock
 
 @pytest.mark.asyncio
 async def test_register_and_login(client: AsyncClient):
-    test_email = "testuser@example.com"
+    test_email = "testuser53434@example.com"
 
     register_data = {
         "first_name": "Juan",
