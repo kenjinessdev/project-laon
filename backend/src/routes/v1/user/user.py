@@ -93,6 +93,7 @@ async def add_address(
         'user_id': current_user.id,
         'street': payload.street,
         'street2': payload.street2,
+        'barangay': payload.barangay,
         'city': payload.city,
         'region': payload.region,
         'postal_code': payload.postal_code,

@@ -1,14 +1,24 @@
-from pydantic import BaseModel, constr
-from typing import Optional, Any
+from pydantic import BaseModel, constr, StringConstraints
+from typing import Optional, Any, Annotated
+
+
+PostalCode = Annotated[
+    str,
+    StringConstraints(
+        max_length=20,
+        pattern=r"^\d{4,5}(-\d{4})?$"  # Accepts 4-5 digit ZIPs and ZIP+4
+    )
+]
 
 
 class AddressBase(BaseModel):
     street: str
     street2: Optional[str] = None
+    barangay: str
     city: constr(max_length=50)
     region: constr(max_length=50)
     postal_code: constr(max_length=20)
-    is_primary: bool = False
+    postal_code: PostalCode
     user: Optional[Any] = None
 
 
@@ -32,6 +42,7 @@ class AddressIn(AddressBase):
 class AddressUpdate(BaseModel):
     street: Optional[str] = None
     street2: Optional[str] = None
+    barangay: Optional[str] = None
     city: Optional[constr(max_length=50)] = None
     region: Optional[constr(max_length=50)] = None
     postal_code: Optional[constr(max_length=20)] = None

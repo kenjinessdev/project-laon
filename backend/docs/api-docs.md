@@ -171,3 +171,23 @@ Allows an authenticated user to change their password by providing the current a
   "current_password": "oldPassword123",
   "new_password": "newPassword456"
 }
+
+
+# Error Response format
+
+## Validation error response body
+```json
+{
+    "detail": "Validation failed",
+    "missing_fields": [
+        "street"
+    ],
+    "format_errors": [
+        {
+            "field": "postal_code",
+            "message": "String should match pattern '^\\d{4,5}(-\\d{4})?$'"
+        }
+    ],
+    "other_errors": null
+}
+```

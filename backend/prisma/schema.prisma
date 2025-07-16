@@ -42,6 +42,7 @@ model Address {
   user_id     String  @db.Uuid
   street      String  @db.Text
   street2     String? @db.Text // ✅ Make optional if it's not always used
+  barangay    String  @db.Text
   city        String  @db.VarChar(50)
   region      String  @db.VarChar(50)
   postal_code String  @db.VarChar(20)
