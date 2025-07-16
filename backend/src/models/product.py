@@ -1,5 +1,5 @@
 from pydantic import BaseModel, constr, condecimal, UUID4
-from typing import Optional
+from typing import Optional, Any
 from enum import Enum
 
 
@@ -21,10 +21,13 @@ class ProductBase(BaseModel):
     description: str
     category_id: Optional[int] = None
     unit: constr(max_length=20)
-    price_per_unit: condecimal(max_digits=12, decimal_places=2)
+    price_per_unit: float
     stock_quantity: int
     status: ProductStatus = ProductStatus.active
     visibility: Visibility = Visibility.public
+    user: Optional[Any] = None
+    images: Optional[Any] = None
+    reviews: Optional[Any] = None
 
 
 class ProductCreate(ProductBase):
@@ -36,14 +39,15 @@ class ProductUpdate(BaseModel):
     description: Optional[str] = None
     category_id: Optional[int] = None
     unit: Optional[constr(max_length=20)] = None
-    price_per_unit: Optional[condecimal(
-        max_digits=12, decimal_places=2)] = None
+    price_per_unit: Optional[float] = None
     stock_quantity: Optional[int] = None
+    status: Optional[ProductStatus] = None
+    visibility: Optional[Visibility] = None
 
 
 class Product(ProductBase):
-    id: UUID4
-    user_id: UUID4
+    id: str
+    user_id: str
 
     class Config:
         from_attributes = True
