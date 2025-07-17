@@ -25,6 +25,19 @@ async def my_products(
     return products
 
 
+@farmer_product_router.get("/product/{product_id}", response_model=Product)
+async def view_product(
+    product_id: str,
+    current_user: User = Depends(farmer_role)
+):
+    product = await prisma.product.find_first(where={'id': product_id})
+
+    if not product or product.user_id != current_user.id:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    return product
+
+
 @farmer_product_router.post("/product", response_model=Product)
 @limiter.limit("5/minute")
 async def create_product(
@@ -55,10 +68,8 @@ async def update_product(
     updated_product: ProductUpdate,
     current_user: User = Depends(farmer_role)
 ):
-    product = await prisma.product.find_unique(
-        where={"id": product_id},
-        include={"user": True}
-    )
+    product = await prisma.product.find_unique(where={"id": product_id})
+
     if not product or product.user_id != current_user.id:
         raise HTTPException(status_code=404, detail="Product not found")
 
@@ -78,13 +89,9 @@ async def delete_product(
     product_id: str,
     current_user: User = Depends(farmer_role)
 ):
-    print("Current User ID:", current_user.id)
-    product = await prisma.product.find_unique(
-        where={"id": product_id},
-        include={"user": True}
-    )
+    product = await prisma.product.find_unique(where={"id": product_id})
 
-    if not product or product.user.id != current_user.id:
+    if not product or product.user_id != current_user.id:
         raise HTTPException(status_code=404, detail="Product not found")
 
     product = await prisma.product.delete(where={'id': product_id})
