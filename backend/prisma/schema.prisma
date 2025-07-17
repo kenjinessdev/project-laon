@@ -11,23 +11,25 @@ datasource db {
 
 // ==================== User Models ====================
 model User {
-  id                String    @id @default(uuid()) @db.Uuid
-  first_name        String    @db.VarChar(100)
-  middle_name       String    @db.VarChar(100)
-  last_name         String    @db.VarChar(100)
-  suffix            String?   @db.VarChar(100)
-  profile_image_url String?   @db.Text
-  email             String    @unique @db.VarChar(100)
-  password          String    @db.VarChar(128)
-  phone_number      String?   @unique @db.VarChar(50)
-  gender            String?   @db.VarChar(50)
+  id                String      @id @default(uuid()) @db.Uuid
+  first_name        String      @db.VarChar(100)
+  middle_name       String      @db.VarChar(100)
+  last_name         String      @db.VarChar(100)
+  suffix            String?     @db.VarChar(100)
+  profile_image_url String?     @db.Text
+  email             String      @unique @db.VarChar(100)
+  password          String      @db.VarChar(128)
+  phone_number      String?     @unique @db.VarChar(50)
+  gender            String?     @db.VarChar(50)
   role              Role
   birthday          DateTime
-  created_at        DateTime  @default(now())
+  created_at        DateTime    @default(now())
   addresses         Address[]
   products          Product[]
   reviews           Review[]
   cart              Cart[]
+  Order             CustomerOrder[]
+  OrderFarm         FarmerOrder[]
 
   @@map("users")
 }
@@ -86,6 +88,7 @@ model Product {
   images     ProductImage[]
   reviews    Review[]
   cart_items CartItem[]
+  OrderItem  OrderItem[]
 
   @@map("products")
 }
@@ -148,4 +151,70 @@ model CartItem {
   product Product @relation(fields: [product_id], references: [id])
 
   @@map("cart_items")
+}
+
+// ==================== Order Models ====================
+model CustomerOrder {
+  id                  String      @id @default(uuid()) @db.Uuid
+  customer_order_code String      @unique
+  customer_id         String      @db.Uuid
+  total_price         Decimal
+  status              OrderStatus
+  updated_at          DateTime    @updatedAt
+  created_at          DateTime    @default(now())
+
+  customer  User          @relation(fields: [customer_id], references: [id])
+  farmer_order FarmerOrder[]
+  order_item OrderItem[]
+
+  @@map("customer_orders")
+}
+
+enum OrderStatus {
+  pending
+  paid
+  shipped
+  delivered
+  cancelled
+}
+
+model FarmerOrder {
+  id                Int               @id @default(autoincrement())
+  customer_order_id String            @db.Uuid
+  farmer_id         String            @db.Uuid
+  status            FarmerOrderStatus
+  subtotal          Decimal
+  created_at        DateTime          @default(now())
+
+  order     CustomerOrder @relation(fields: [customer_order_id], references: [id])
+  farmer    User          @relation(fields: [farmer_id], references: [id])
+  OrderItem OrderItem[]
+
+  @@map("farmer_orders")
+}
+
+enum FarmerOrderStatus {
+  pending // Order placed, farmer hasn't acted yet
+  accepted // Farmer confirmed the order
+  rejected // Farmer rejected their part of the order
+  preparing // Farmer is preparing the items
+  ready_to_ship // Items are ready for delivery/pickup
+  shipped // Items have been shipped
+  delivered // Items have been delivered to the customer
+  cancelled // Order canceled (by farmer or system)
+}
+
+model OrderItem {
+  id                Int     @id @default(autoincrement())
+  customer_order_id String  @db.Uuid
+  farmer_order_id   Int
+  product_id        String  @db.Uuid
+  quantity          Int
+  price             Decimal
+
+  order     CustomerOrder @relation(fields: [customer_order_id], references: [id])
+  product   Product       @relation(fields: [product_id], references: [id])
+  orderFarm FarmerOrder   @relation(fields: [farmer_order_id], references: [id])
+
+  @@map("order_items")
 }
