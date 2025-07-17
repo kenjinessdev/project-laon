@@ -34,7 +34,10 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
             detail="Invalid or expired token"
         )
 
-    user = await prisma.user.find_unique(where={"id": user_id})
+    user = await prisma.user.find_unique(
+        where={"id": user_id},
+        include={"addresses": True}
+    )
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

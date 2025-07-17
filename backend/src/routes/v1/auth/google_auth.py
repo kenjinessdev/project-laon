@@ -1,7 +1,7 @@
 from authlib.integrations.starlette_client import OAuthError
 from fastapi import Request, Response, HTTPException, APIRouter
 from src.db.prisma import prisma
-from src.utils.jwt import create_access_token, create_refresh_token
+from src.utils.jwt import create_access_token, create_refresh_token, issue_tokens
 from datetime import datetime
 from src.core.config import settings
 from src.core.limiter import limiter
@@ -82,18 +82,7 @@ async def google_callback(request: Request, response: Response):
                 "suffix": ""
             })
 
-        access_token = create_access_token(user.id)
-        refresh_token = create_refresh_token(user.id)
-
-        # 🍪 e HttpOnly refresh token cookie
-        response.set_cookie(
-            key="refresh_token",
-            value=refresh_token,
-            httponly=True,
-            secure=not settings.DEBUG,  # True in production
-            samesite="lax",
-            max_age=60 * 60 * 24 * settings.REFRESH_TOKEN_EXPIRE_DAYS
-        )
+        access_token = issue_tokens(user.id, response)
 
         return {
             "access_token": access_token,
