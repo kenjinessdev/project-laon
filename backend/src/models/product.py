@@ -1,6 +1,7 @@
 from pydantic import BaseModel, constr, condecimal, UUID4
 from typing import Optional, Any
 from enum import Enum
+from datetime import datetime
 
 
 class ProductStatus(str, Enum):
@@ -48,6 +49,8 @@ class ProductUpdate(BaseModel):
 class Product(ProductBase):
     id: str
     user_id: str
+    updated_at: datetime
+    created_at: datetime
 
     class Config:
         from_attributes = True

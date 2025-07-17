@@ -77,7 +77,7 @@ model Product {
   visibility     ProductVisibility @default(public)
   price_per_unit Decimal
   stock_quantity Int               @db.Integer
-  updated_at     DateTime          @default(now())
+  updated_at     DateTime          @updatedAt
   created_at     DateTime          @default(now())
 
   user     User             @relation(fields: [user_id], references: [id])

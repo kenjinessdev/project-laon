@@ -5,7 +5,7 @@ from src.models.user import User
 from src.db.prisma import prisma
 from src.core.limiter import limiter
 from typing import List
-from uuid import UUID
+from datetime import datetime
 
 farmer_product_router = APIRouter()
 
@@ -63,6 +63,7 @@ async def update_product(
         raise HTTPException(status_code=404, detail="Product not found")
 
     updated_data = updated_product.dict(exclude_unset=True)
+    updated_data['updated_at'] = datetime.utcnow()
     product = await prisma.product.update(
         where={'id': product_id},
         data=updated_data
