@@ -48,28 +48,6 @@ async def view_product(
     return product
 
 
-# @farmer_product_router.post("/product", response_model=Product)
-# @limiter.limit("5/minute")
-# async def create_product(
-#     request: Request,
-#     payload: ProductCreate,
-#     current_user: User = Depends(farmer_role)
-# ):
-#     product = await prisma.product.create(data={
-#         'user_id': current_user.id,
-#         'name': payload.name,
-#         'description': payload.description,
-#         'unit': payload.unit,
-#         'category_id': None,
-#         'price_per_unit': payload.price_per_unit,
-#         'stock_quantity': payload.stock_quantity,
-#         'status': payload.status,
-#         'visibility': payload.visibility
-#     })
-#
-#     return product
-
-
 @farmer_product_router.post("/product", response_model=Product)
 @limiter.limit("5/minute")
 async def create_product(
@@ -81,7 +59,7 @@ async def create_product(
     stock_quantity: int = Form(...),
     status: str = Form(...),
     visibility: str = Form(...),
-    image: UploadFile = File(None),
+    images: List[UploadFile] = File(None),
     current_user: User = Depends(farmer_role),
 ):
     # Validate input lengths
@@ -105,43 +83,42 @@ async def create_product(
         'visibility': visibility
     })
 
-    # If image is uploaded, upload to Supabase
-    if image:
-        try:
-            filename = f"{uuid.uuid4()}_{image.filename}"
-            content = await image.read()
+    # Upload multiple images
+    if images:
+        for image in images:
+            try:
+                filename = f"{uuid.uuid4()}_{image.filename}"
+                content = await image.read()
 
-            upload_url = f"{settings.SUPABASE_URL}/storage/v1/object/{product_image_bucket}/{filename}"
-            headers = {
-                "Authorization": f"Bearer {settings.SUPABASE_SERVICE_KEY}",
-                "Content-Type": image.content_type
-            }
+                upload_url = f"{settings.SUPABASE_URL}/storage/v1/object/{product_image_bucket}/{filename}"
+                headers = {
+                    "Authorization": f"Bearer {settings.SUPABASE_SERVICE_KEY}",
+                    "Content-Type": image.content_type
+                }
 
-            response = requests.post(upload_url, headers=headers, data=content)
+                response = requests.post(
+                    upload_url, headers=headers, data=content)
 
-            if response.status_code != 200:
+                if response.status_code != 200:
+                    raise Exception("Image upload failed")
+
+                public_url = f"{settings.SUPABASE_URL}/storage/v1/object/public/{product_image_bucket}/{filename}"
+
+                await prisma.productimage.create(data={
+                    "product_id": product.id,
+                    "image_public_url": public_url,
+                })
+
+            except Exception:
+                await prisma.product.delete(where={"id": product.id})
                 raise HTTPException(
-                    status_code=500, detail="Image upload failed")
+                    status_code=500, detail="One or more images failed to upload")
 
-            public_url = f"{settings.SUPABASE_URL}/storage/v1/object/public/{product_image_bucket}/{filename}"
-
-            await prisma.productimage.create(data={
-                "product_id": product.id,
-                "image_public_url": public_url,
-            })
-        except Exception:
-            # Optionally, delete the product if image upload fails
-            await prisma.product.delete(where={"id": product.id})
-            raise HTTPException(
-                status_code=500, detail="Product image upload failed")
-
+    # Fetch product with images
     updated_product = await prisma.product.find_unique(
         where={"id": product.id},
         include={"images": True}
     )
-
-    if not updated_product or updated_product.user_id != current_user.id:
-        raise HTTPException(status_code=404, detail="Product not found")
 
     return updated_product
 
@@ -184,7 +161,7 @@ async def delete_product(
     return {'detail': 'Product deleted successfully'}
 
 
-@farmer_product_router.post("/product/{product_id}/images")
+@farmer_product_router.post("/product/{product_id}/images", response_model=Product)
 async def upload_product_image(
     product_id: str,
     file: UploadFile = File(...),

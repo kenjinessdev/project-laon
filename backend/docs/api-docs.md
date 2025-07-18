@@ -199,20 +199,28 @@ Allows an authenticated user to change their password by providing the current a
 **POST** `/farmer/product`
 
 *Request Body:*
+- Content-Type: multipart/form-data
+- this is in form data since you are allowed to post product images
 
-```json
-{
-  "name": "farmerssss",
-  "description": "string",
-  "category_id": null, // wala pa nako ni na implement
-  "unit": "string",
-  "visibility": "public",
-  "status": "active",
-  "price_per_unit": 0,
-  "stock_quantity": 0
-}
+### Fields
 
-```
+- `name` — string
+
+- `description` — string
+
+- `category_id` — (nullable, optional for now)
+
+- `unit` — string
+
+- `visibility` — "public" or "private"
+
+- `status` — "active" or "inactive"
+
+- `price_per_unit` — number
+
+- `stock_quantity` — number
+
+- `images` — (optional) one or more image files to upload. image/jpeg or image/png file format
 
 *Response Body*
 
@@ -227,7 +235,7 @@ Allows an authenticated user to change their password by providing the current a
     "status": "active",
     "visibility": "public",
     "user": null,
-    "images": null,
+    "images": [],
     "reviews": null,
     "id": "33799f89-9ac0-428e-9bdf-2e4d0d990268",
     "user_id": "57885b9c-f6a4-4a1c-b61b-b8986f3a5b9a"
@@ -341,4 +349,49 @@ You are not required to enter all fields, just put the fields you want to edit
 }
 ```
 
+## Add Product Image
 
+**POST** `/farmer/product/{product_id}/images`
+
+*Request Body*
+- Content-Type: multipart/form-data
+
+### Fields
+
+- `file` - image/jpeg or image/png file
+
+### Success response
+
+```json
+{
+    "detail": "Image uploaded successfully"
+}
+```
+
+### Failed response
+
+```json
+{
+    "detail": "Upload failed"
+}
+```
+
+## Delete Product Image
+
+**DELETE** `/farmer/product/{product_id}/images/{image_id}`
+
+### Success response
+
+```json
+{
+  "detail": "Image deleted successfully"
+}
+```
+
+### Failed response
+
+```json
+{
+  "detail": "Failed to delete image from Supabase"
+}
+```
