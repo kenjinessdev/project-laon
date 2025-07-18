@@ -20,6 +20,9 @@ class Settings(BaseSettings):  # type: ignore
     FACEBOOK_CLIENT_SECRET: str
     FACEBOOK_REDIRECT_URI: str
 
+    SUPABASE_URL: str
+    SUPABASE_SERVICE_KEY: str
+
     DEBUG: bool = True
 
     class Config:

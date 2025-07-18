@@ -1,5 +1,5 @@
 from pydantic import BaseModel, constr, condecimal, UUID4
-from typing import Optional, Any
+from typing import Optional, Any, List
 from enum import Enum
 from datetime import datetime
 
@@ -18,17 +18,17 @@ class Visibility(str, Enum):
 
 
 class ProductBase(BaseModel):
-    name: constr(max_length=100)
+    name: constr(max_length=99)
     description: str
     category_id: Optional[int] = None
-    unit: constr(max_length=20)
+    unit: constr(max_length=19)
     price_per_unit: float
     stock_quantity: int
     status: ProductStatus = ProductStatus.active
     visibility: Visibility = Visibility.public
     user: Optional[Any] = None
-    images: Optional[Any] = None
-    reviews: Optional[Any] = None
+    images: Optional[List[Any]] = None
+    reviews: Optional[List[Any]] = None
 
 
 class ProductCreate(ProductBase):
@@ -54,3 +54,20 @@ class Product(ProductBase):
 
     class Config:
         from_attributes = True
+
+
+class ProductImageBase(BaseModel):
+    product_id: str
+    image_public_url: str
+
+    class Config:
+        from_attributes = True
+
+
+class UploadProductImageBase(ProductImageBase):
+    pass
+
+
+class ProductImage(ProductImageBase):
+    int: str
+    created_at: datetime
