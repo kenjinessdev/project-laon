@@ -11,19 +11,19 @@ datasource db {
 
 // ==================== User Models ====================
 model User {
-  id                String      @id @default(uuid()) @db.Uuid
-  first_name        String      @db.VarChar(100)
-  middle_name       String      @db.VarChar(100)
-  last_name         String      @db.VarChar(100)
-  suffix            String?     @db.VarChar(100)
-  profile_image_url String?     @db.Text
-  email             String      @unique @db.VarChar(100)
-  password          String      @db.VarChar(128)
-  phone_number      String?     @unique @db.VarChar(50)
-  gender            String?     @db.VarChar(50)
+  id                String          @id @default(uuid()) @db.Uuid
+  first_name        String          @db.VarChar(100)
+  middle_name       String          @db.VarChar(100)
+  last_name         String          @db.VarChar(100)
+  suffix            String?         @db.VarChar(100)
+  profile_image_url String?         @db.Text
+  email             String          @unique @db.VarChar(100)
+  password          String          @db.VarChar(128)
+  phone_number      String?         @unique @db.VarChar(50)
+  gender            String?         @db.VarChar(50)
   role              Role
   birthday          DateTime
-  created_at        DateTime    @default(now())
+  created_at        DateTime        @default(now())
   addresses         Address[]
   products          Product[]
   reviews           Review[]
@@ -163,9 +163,9 @@ model CustomerOrder {
   updated_at          DateTime    @updatedAt
   created_at          DateTime    @default(now())
 
-  customer  User          @relation(fields: [customer_id], references: [id])
+  customer     User          @relation(fields: [customer_id], references: [id])
   farmer_order FarmerOrder[]
-  order_item OrderItem[]
+  order_item   OrderItem[]
 
   @@map("customer_orders")
 }

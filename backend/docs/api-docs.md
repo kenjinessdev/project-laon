@@ -250,6 +250,48 @@ Allows an authenticated user to change their password by providing the current a
 - NOTE: products not product
 mas mag makes sense man pag plural sa get
 
+### Params
+
+- `name` (string, optional)
+
+  - Filter products whose names contain this value (case-insensitive).
+
+- `status` (string, optional)
+
+  - Filter by product status (e.g., "active", "archived", "draft", "sold").
+
+- `visibility` (string, optional)
+
+  - Filter by product visibility (e.g., "public", "private").
+
+- `min_price` (decimal, optional)
+
+  - Include only products with price_per_unit greater than or equal to this value.
+
+- `max_price` (decimal, optional)
+
+  - Include only products with price_per_unit less than or equal to this value.
+
+- `skip` (int, optional, default: 0)
+
+  - Number of products to skip. Used for pagination.
+
+- `take` (int, optional, default: 10)
+
+  - Number of products to return. Used for pagination.
+
+- `order_by` (accepts name, price_per_unit, created_at, updated_at)
+
+  - The field by which to sort the results.
+
+- `order` (accepts asc or desc)
+
+  - sort direction
+
+*sample url*
+
+`http://localhost:8000/api/v1/farmer/products?skip=0&take=10&order_by=created_at&order=desc`
+
 *Response Body*
 
 ```json

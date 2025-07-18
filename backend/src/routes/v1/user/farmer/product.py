@@ -1,14 +1,16 @@
-from fastapi import APIRouter, Depends, Request, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, Depends, Request, HTTPException, UploadFile, File, Form, Query
 from src.dependencies.auth import require_role
-from src.models.product import ProductCreate, Product, ProductUpdate
+from src.models.product import Product, ProductUpdate
 from src.models.user import User
 from src.db.prisma import prisma
 from src.core.limiter import limiter
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 from src.core.config import settings
+from decimal import Decimal
 import requests
 import uuid
+
 
 farmer_product_router = APIRouter()
 
@@ -17,14 +19,64 @@ farmer_role = require_role("farmer")
 product_image_bucket = "product-images"
 
 
+ALLOWED_ORDER_FIELDS = ["name", "price_per_unit", "created_at", "updated_at"]
+
+
 @farmer_product_router.get("/products", response_model=List[Product])
 async def my_products(
+    name: Optional[str] = Query(None),
+    status: Optional[str] = Query(None),
+    visibility: Optional[str] = Query(None),
+    min_price: Optional[float] = Query(None),
+    max_price: Optional[float] = Query(None),
+    skip: int = Query(0, ge=0),
+    take: int = Query(10, ge=1),
+    order_by: str = Query("created_at"),
+    order: str = Query("desc"),
     current_user: User = Depends(farmer_role)
 ):
+    # Validate `order_by`
+    if order_by not in ALLOWED_ORDER_FIELDS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid order_by field. Allowed: {', '.join(ALLOWED_ORDER_FIELDS)}"
+        )
+
+    if order.lower() not in ["asc", "desc"]:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid order value. Use 'asc' or 'desc'"
+        )
+
+    filters = {
+        "user_id": current_user.id
+    }
+
+    if name:
+        filters["name"] = {"contains": name, "mode": "insensitive"}
+
+    if status:
+        filters["status"] = status
+
+    if visibility:
+        filters["visibility"] = visibility
+
+    if min_price is not None or max_price is not None:
+        filters["price_per_unit"] = {}
+        if min_price is not None:
+            filters["price_per_unit"]["gte"] = min_price
+        if max_price is not None:
+            filters["price_per_unit"]["lte"] = max_price
+
+    order_clause = {
+        order_by: order.lower(),
+    }
+
     products = await prisma.product.find_many(
-        where={
-            'user_id': current_user.id
-        },
+        where=filters,
+        skip=skip,
+        take=take,
+        order=order_clause,
         include={"images": True}
     )
 
