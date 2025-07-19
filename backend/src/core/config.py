@@ -1,5 +1,6 @@
 # from pydantic import BaseSettings
 from pydantic_settings import BaseSettings
+from typing import ClassVar, List
 
 
 class Settings(BaseSettings):  # type: ignore
@@ -22,6 +23,9 @@ class Settings(BaseSettings):  # type: ignore
 
     SUPABASE_URL: str
     SUPABASE_SERVICE_KEY: str
+
+    ORDER_BY_FIELDS: ClassVar[List[str]] = [
+        "name", "price_per_unit", "created_at", "updated_at"]
 
     DEBUG: bool = True
 

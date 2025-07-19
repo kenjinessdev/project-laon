@@ -19,7 +19,7 @@ farmer_role = require_role("farmer")
 product_image_bucket = "product-images"
 
 
-ALLOWED_ORDER_FIELDS = ["name", "price_per_unit", "created_at", "updated_at"]
+ALLOWED_ORDER_FIELDS = settings.ORDER_BY_FIELDS
 
 
 @farmer_product_router.get("/products", response_model=List[Product])
