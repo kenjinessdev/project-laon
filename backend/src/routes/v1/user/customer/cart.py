@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from src.dependencies.auth import require_role
 from src.db.prisma import prisma
 from src.models.user import User
-from src.models.cart import Cart, AddToCartRequest
+from src.models.cart import Cart, AddToCartRequest, UpdateQuantityRequest
 
 customer_cart_route = APIRouter()
 
@@ -92,3 +92,43 @@ async def add_to_cart(
     )
 
     return cart
+
+
+@customer_cart_route.put("/cart-items/{item_id}/quantity")
+async def update_cart_item_quantity(
+    item_id: str,
+    payload: UpdateQuantityRequest,
+    current_user: User = Depends(customer_role)
+):
+    cart_item = await prisma.cartitem.find_unique(
+        where={"id": item_id},
+        include={"cart": True}
+    )
+    if not cart_item or cart_item.cart.customer_id != current_user.id:
+        raise HTTPException(status_code=404, detail="Cart item not found")
+
+    updated_item = await prisma.cartitem.update(
+        where={"id": item_id},
+        data={"quantity": payload.quantity}
+    )
+
+    return updated_item
+
+
+@customer_cart_route.delete("/cart-items/{item_id}/delete")
+async def delete_cart_item(
+    item_id: str,
+    current_user: User = Depends(customer_role)
+):
+
+    cart_item = await prisma.cartitem.find_unique(
+        where={"id": item_id},
+        include={"cart": True}
+    )
+
+    if not cart_item or cart_item.cart.customer_id != current_user.id:
+        raise HTTPException(status_code=404, detail="Cart item not found")
+
+    await prisma.cartitem.delete(where={"id": item_id})
+
+    return {"detail": "Cart item deleted successfully"}

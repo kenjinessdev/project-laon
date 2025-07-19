@@ -40,6 +40,11 @@ class AddToCartRequest(BaseModel):
         return v
 
 
+class UpdateQuantityRequest(BaseModel):
+    quantity: int = Field(..., gt=0,
+                          description="New quantity must be greater than 0")
+
+
 class Cart(CartBase):
     id: str
     customer_id: str
