@@ -132,3 +132,30 @@ async def delete_cart_item(
     await prisma.cartitem.delete(where={"id": item_id})
 
     return {"detail": "Cart item deleted successfully"}
+
+
+@customer_cart_route.get("/cart")
+async def get_cart(
+    current_user: User = Depends(customer_role)
+):
+    cart = await prisma.cart.find_first(
+        where={
+            "AND": [
+                {"customer_id": current_user.id},
+                {"is_active": True}
+            ]
+        },
+        include={
+            "cart_items": {
+                "include": {
+                    "product": {
+                        "include": {
+                            "images": True
+                        }
+                    }
+                }
+            }
+        }
+    )
+
+    return cart
