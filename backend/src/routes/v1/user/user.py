@@ -1,5 +1,5 @@
 # in routes/user.py or similar
-from fastapi import APIRouter, Depends, Request, HTTPException
+from fastapi import APIRouter, Depends, Request, HTTPException, UploadFile, File
 from src.dependencies.auth import get_current_user
 from prisma.models import User
 from prisma.errors import UniqueViolationError
@@ -8,8 +8,13 @@ from src.models.user import UserUpdate, PasswordChangeRequest
 from src.core.limiter import limiter
 from src.utils.security import hash_password, verify_password
 from src.models.address import AddressIn, Address, AddressUpdate
+from src.core.config import settings
+import requests
+import uuid
 
 user_router = APIRouter()
+
+user_avatar_bucket = "user-avatar"
 
 
 @user_router.get("/me", response_model=User)
@@ -159,3 +164,59 @@ async def is_address_existing(
     )
     if not address or address.user.id != current_user_id:
         raise HTTPException(status_code=404, detail="Address not found")
+
+
+@user_router.post("/me/avatar")
+@limiter.limit("5/minute")
+async def add_avatar(
+    request: Request,
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user)
+):
+
+    # check if there are existing profile avatar
+    if current_user.profile_image_url:
+        try:
+            old_filename = current_user.profile_image_url.split("/")[-1]
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid image URL")
+
+        file_path = f"{user_avatar_bucket}/{old_filename}"
+        delete_url = f"{settings.SUPABASE_URL}/storage/v1/object/{file_path}"
+        headers = {
+            "Authorization": f"Bearer {settings.SUPABASE_SERVICE_KEY}"
+        }
+
+        response = requests.delete(delete_url, headers=headers)
+
+        if response.status_code not in [200, 204, 404]:
+            raise HTTPException(
+                status_code=500, detail="Failed to delete image from Supabase"
+            )
+
+    filename = f"{uuid.uuid4()}_{file.filename}"
+    file_content = await file.read()
+
+    upload_url = f"{settings.SUPABASE_URL}/storage/v1/object/{user_avatar_bucket}/{filename}?upload=1"
+
+    headers = {
+        "Authorization": f"Bearer {settings.SUPABASE_SERVICE_KEY}",
+        "Content-Type": file.content_type
+    }
+
+    response = requests.post(upload_url, headers=headers, data=file_content)
+
+    if response.status_code not in [200, 201]:
+        raise HTTPException(status_code=500, detail="Upload failed")
+
+    public_url = f"{settings.SUPABASE_URL}/storage/v1/object/public/{user_avatar_bucket}/{filename}"
+
+    await prisma.user.update(
+        where={"id": current_user.id},
+        data={"profile_image_url": public_url}
+    )
+
+    return {
+        "detail": "Avatar uploaded successfully",
+        "image_url": public_url
+    }
