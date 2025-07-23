@@ -22,7 +22,7 @@ async def get_me(current_user: User = Depends(get_current_user)):
     return current_user
 
 
-@user_router.put("/me", response_model=User)
+@user_router.patch("/me", response_model=User)
 @limiter.limit("5/minute")
 async def update_profile(
     request: Request,
@@ -58,7 +58,7 @@ async def update_profile(
     return updated_user
 
 
-@user_router.put("/me/password")
+@user_router.patch("/me/password")
 async def change_password(
     payload: PasswordChangeRequest,
     current_user: User = Depends(get_current_user)
@@ -110,7 +110,7 @@ async def create_address(
     return address
 
 
-@user_router.put("/me/address/{address_id}", response_model=Address)
+@user_router.patch("/me/address/{address_id}", response_model=Address)
 @limiter.limit("5/minute")
 async def update_address(
     request: Request,

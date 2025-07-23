@@ -148,7 +148,7 @@ Authorization: Bearer <access_token>
 
 ### Update User Info
 
-- **PUT** `/users/me`
+- **PATCH** `/users/me`
   Updates user info
   Returns 400 error if email or phone number is already existing in db
 
@@ -158,7 +158,7 @@ Authorization: Bearer <access_token>
 
 ## 🔐 Change Password
 
-**PUT** `/users/me/password`
+**PATCH** `/users/me/password`
 
 Allows an authenticated user to change their password by providing the current and new passwords.
 
@@ -331,7 +331,7 @@ mas mag makes sense man pag plural sa get
 
 ## Product update
 
-**PUT** `/farmer/product/{product_id}`
+**PATCH** `/farmer/product/{product_id}`
 
 *Request Body*
 ```json

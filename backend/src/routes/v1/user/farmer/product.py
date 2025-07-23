@@ -175,7 +175,7 @@ async def create_product(
     return updated_product
 
 
-@farmer_product_router.put("/product/{product_id}", response_model=Product)
+@farmer_product_router.patch("/product/{product_id}", response_model=Product)
 @limiter.limit("5/minute")
 async def update_product(
     request: Request,

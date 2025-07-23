@@ -94,7 +94,7 @@ async def add_to_cart(
     return cart
 
 
-@customer_cart_route.put("/cart-items/{item_id}/quantity")
+@customer_cart_route.patch("/cart-items/{item_id}/quantity")
 async def update_cart_item_quantity(
     item_id: str,
     payload: UpdateQuantityRequest,
