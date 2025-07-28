@@ -47,6 +47,7 @@ async def register(request: Request,  response: Response, user: UserCreate):
 
         return {
             "access_token": access_token,
+            "user": new_user,
             "token_type": "bearer"
         }
 
@@ -76,6 +77,7 @@ async def login(request: Request, response: Response, creds: LoginSchema):
 
     return {
         "access_token": access_token,
+        "user": user,
         "token_type": "bearer"
     }
 
@@ -89,6 +91,7 @@ async def refresh_token(request: Request):
     try:
         payload = decode_token(token)
         user_id = payload.get("sub")
+        user = await prisma.user.find_unique(where={"id": user_id})
         if not user_id:
             raise HTTPException(401, "Invalid token payload")
     except JWTError:
@@ -96,5 +99,6 @@ async def refresh_token(request: Request):
 
     return {
         "access_token": create_access_token(user_id),
+        "user": user,
         "token_type": "bearer"
     }

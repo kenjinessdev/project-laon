@@ -86,6 +86,7 @@ async def google_callback(request: Request, response: Response):
 
         return {
             "access_token": access_token,
+            "user": user,
             "token_type": "bearer"
         }
 
