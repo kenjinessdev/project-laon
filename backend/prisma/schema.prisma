@@ -89,7 +89,7 @@ model Product {
   images     ProductImage[]
   reviews    Review[]
   cart_items CartItem[]
-  OrderItem  OrderItem[]
+  order_item  OrderItem[]
 
   @@map("products")
 }
@@ -191,7 +191,7 @@ model FarmerOrder {
 
   order     CustomerOrder @relation(fields: [customer_order_id], references: [id])
   farmer    User          @relation(fields: [farmer_id], references: [id])
-  OrderItem OrderItem[]
+  order_item OrderItem[]
 
   @@map("farmer_orders")
 }
@@ -217,7 +217,7 @@ model OrderItem {
 
   order     CustomerOrder @relation(fields: [customer_order_id], references: [id])
   product   Product       @relation(fields: [product_id], references: [id])
-  orderFarm FarmerOrder   @relation(fields: [farmer_order_id], references: [id])
+  order_farm FarmerOrder   @relation(fields: [farmer_order_id], references: [id])
 
   @@map("order_items")
 }

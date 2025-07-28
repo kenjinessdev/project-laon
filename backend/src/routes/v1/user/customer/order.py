@@ -6,12 +6,14 @@ from src.models.user import User
 from src.models.cart import Cart, AddToCartRequest, UpdateQuantityRequest
 from src.core.limiter import limiter
 from collections import defaultdict
+from src.models.query_params import OrderQueryParams
 
 customer_order_route = APIRouter()
 
 customer_role = require_role("customer")
 
 
+# lacking of payment
 @customer_order_route.post("/checkout")
 @limiter.limit("5/minute")
 async def checkout(
@@ -89,25 +91,34 @@ async def checkout(
 @customer_order_route.get("/orders")
 @limiter.limit("10/minute")
 async def orders(
+    request: Request,
     current_user: User = Depends(customer_role),
-    search: str = Query(default="", description="Search by status"),
-    skip: int = Query(default=0, ge=0),
-    limit: int = Query(default=10, ge=1)
+    params: OrderQueryParams = Depends()
 ):
     filters = [
         {"customer_id": current_user.id}
     ]
 
     # Filter by status if provided
-    if search:
+    if params.search:
         filters.append({
-            "status": search.lower()  # make sure your enum uses uppercase like "PENDING"
+            "status": params.search.lower()
         })
 
     orders = await prisma.customerorder.find_many(
         where={"AND": filters},
-        skip=skip,
-        take=limit,
+        skip=params.skip,
+        take=params.limit,
+        include={
+            "customer": True,
+            "farmer_order": True,
+            "order_item": {
+                "include": {
+                    "product": True,
+                    "order_farm": True,
+                }
+            }
+        },
         order={"created_at": "desc"}
     )
 
@@ -118,15 +129,44 @@ async def orders(
     return {
         "message": f"{total_count} orders found",
         "total": total_count,
-        "skip": skip,
-        "limit": limit,
+        "skip": params.skip,
+        "limit": params.limit,
         "orders": orders
+    }
+
+
+@customer_order_route.get("/orders/{order_id}")
+async def get_order(
+    order_id: str,
+    current_user: User = Depends(customer_role)
+):
+    order = await prisma.customerorder.find_first(
+        where={"id": order_id},
+        include={
+            "customer": True,
+            "farmer_order": True,
+            "order_item": {
+                "include": {
+                    "product": True,
+                    "order_farm": True,
+                }
+            }
+        }
+    )
+
+    if not order or order.customer_id != current_user.id:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    return {
+        "message": "Product found",
+        "order": order,
     }
 
 
 @customer_order_route.post("/orders/{order_id}/cancel")
 @limiter.limit("10/minute")
 async def cancel_order(
+    request: Request,
     order_id: str,
     current_user: User = Depends(customer_role)
 ):

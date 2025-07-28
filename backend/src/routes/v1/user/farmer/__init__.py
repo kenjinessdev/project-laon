@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Depends
 from src.dependencies.auth import require_role
 from src.routes.v1.user.farmer.product import farmer_product_router
+from src.routes.v1.user.farmer.order import farmer_order_route
 
 farmer_router = APIRouter()
 farmer_router.include_router(farmer_product_router)
+farmer_router.include_router(farmer_order_route)
 
 
 @farmer_router.get("/dashboard")
