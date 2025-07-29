@@ -3,7 +3,7 @@ from src.db.prisma import prisma
 from datetime import datetime
 from src.core.config import settings
 from src.core.limiter import limiter
-from src.utils.jwt import create_access_token, create_refresh_token
+from src.utils.jwt import create_access_token, create_refresh_token, issue_tokens
 from src.core.oauth import oauth
 from jose import JWTError
 
@@ -77,22 +77,11 @@ async def facebook_callback(request: Request, response: Response):
                 "phone_number": None
             })
 
-        # 🔐 Token issuance
-        access_token = create_access_token(user.id)
-        refresh_token = create_refresh_token(user.id)
-
-        # 🍪 Store refresh token in HttpOnly cookie
-        response.set_cookie(
-            key="refresh_token",
-            value=refresh_token,
-            httponly=True,
-            secure=not settings.DEBUG,
-            samesite="lax",
-            max_age=60 * 60 * 24 * settings.REFRESH_TOKEN_EXPIRE_DAYS
-        )
+        access_token = issue_tokens(user.id, response)
 
         return {
             "access_token": access_token,
+            "user": user,
             "token_type": "bearer"
         }
 

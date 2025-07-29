@@ -6,22 +6,22 @@ from src.db.prisma import prisma  # shared Prisma instance
 from unittest.mock import AsyncMock, patch, MagicMock
 
 
-@pytest_asyncio.fixture(scope="function")
-async def client():
-    if not prisma.is_connected():
-        await prisma.connect()
-
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as ac:
-        yield ac
-
-    if prisma.is_connected():
-        await prisma.disconnect()
+# @pytest_asyncio.fixture(scope="function")
+# async def client():
+#     if not prisma.is_connected():
+#         await prisma.connect()
+#
+#     transport = ASGITransport(app=app)
+#     async with AsyncClient(transport=transport, base_url="http://test") as ac:
+#         yield ac
+#
+#     if prisma.is_connected():
+#         await prisma.disconnect()
 
 
 @pytest.mark.asyncio
 async def test_register_and_login(client: AsyncClient):
-    test_email = "testuser@example.com"
+    test_email = "testuser53434@example.com"
 
     register_data = {
         "first_name": "Juan",

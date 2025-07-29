@@ -1,20 +1,18 @@
 
 # routes/auth.py
-from authlib.integrations.starlette_client import OAuthError
 from fastapi import Request, Response, HTTPException, APIRouter
 from src.db.prisma import prisma
 from src.utils.security import hash_password, verify_password
 from src.utils.jwt import create_access_token, create_refresh_token
-from src.models.user import UserCreate, LoginSchema, User
+from src.models.user import UserCreate, LoginSchema
 from datetime import datetime
 from src.core.config import settings
 from prisma.errors import UniqueViolationError
 from src.core.limiter import limiter
 from jose import JWTError
-from src.utils.jwt import decode_token
+from src.utils.jwt import decode_token, issue_tokens
 from src.routes.v1.auth.facebook_auth import facebook_router
 from src.routes.v1.auth.google_auth import google_router
-import re
 
 
 # from src.models.user import UserOut, LoginSchema
@@ -45,22 +43,11 @@ async def register(request: Request,  response: Response, user: UserCreate):
             "role": user.role
         })
 
-        # Generate tokens
-        access_token = create_access_token(new_user.id)
-        refresh_token = create_refresh_token(new_user.id)
-
-        # Store refresh token in secure cookie
-        response.set_cookie(
-            key="refresh_token",
-            value=refresh_token,
-            httponly=True,
-            secure=not settings.DEBUG,
-            samesite="lax",
-            max_age=60 * 60 * 24 * settings.REFRESH_TOKEN_EXPIRE_DAYS,
-        )
+        access_token = issue_tokens(new_user.id, response)
 
         return {
             "access_token": access_token,
+            "user": new_user,
             "token_type": "bearer"
         }
 
@@ -86,21 +73,11 @@ async def login(request: Request, response: Response, creds: LoginSchema):
     if not user or not verify_password(creds.password, user.password):
         raise HTTPException(401, "Invalid credentials")
 
-    access_token = create_access_token(user.id)
-    refresh_token = create_refresh_token(user.id)
-
-    # ✅ Store refresh token in HttpOnly cookie
-    response.set_cookie(
-        key="refresh_token",
-        value=refresh_token,
-        httponly=True,
-        secure=not settings.DEBUG,
-        samesite="lax",
-        max_age=60 * 60 * 24 * settings.REFRESH_TOKEN_EXPIRE_DAYS
-    )
+    access_token = issue_tokens(user.id, response)
 
     return {
         "access_token": access_token,
+        "user": user,
         "token_type": "bearer"
     }
 
@@ -114,6 +91,7 @@ async def refresh_token(request: Request):
     try:
         payload = decode_token(token)
         user_id = payload.get("sub")
+        user = await prisma.user.find_unique(where={"id": user_id})
         if not user_id:
             raise HTTPException(401, "Invalid token payload")
     except JWTError:
@@ -121,5 +99,6 @@ async def refresh_token(request: Request):
 
     return {
         "access_token": create_access_token(user_id),
+        "user": user,
         "token_type": "bearer"
     }

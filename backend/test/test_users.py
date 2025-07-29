@@ -6,20 +6,21 @@ from src.main import app
 from src.db.prisma import prisma
 from src.utils.jwt import create_access_token
 from datetime import datetime
+from src.utils.security import hash_password
 
 
-@pytest_asyncio.fixture(scope="function")
-async def client():
-    if not prisma.is_connected():
-        await prisma.connect()
-
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as ac:
-        yield ac
-
-    if prisma.is_connected():
-        await prisma.disconnect()
-
+# @pytest_asyncio.fixture(scope="function")
+# async def client():
+#     if not prisma.is_connected():
+#         await prisma.connect()
+#
+#     transport = ASGITransport(app=app)
+#     async with AsyncClient(transport=transport, base_url="http://test") as ac:
+#         yield ac
+#
+#     if prisma.is_connected():
+#         await prisma.disconnect()
+#
 
 @pytest.mark.asyncio
 async def test_update_user_profile(client):  # Use the fixture here
@@ -117,3 +118,51 @@ async def test_update_profile_email_or_phone_conflict(client):
     # Clean up
     await prisma.user.delete(where={"id": user_a.id})
     await prisma.user.delete(where={"id": user_b.id})
+
+
+@pytest.mark.asyncio
+async def test_change_password(client):
+    user = await prisma.user.create({
+        "first_name": "User",
+        "last_name": "A",
+        "email": "test_user1234@example.com",
+        "password": hash_password("old_password"),
+        "phone_number": "test_number",
+        "gender": "male",
+        "birthday": datetime(1990, 1, 1),
+        "role": "customer",
+        "profile_image_url": "",
+        "suffix": "",
+        "middle_name": ""
+    })
+    access_token = create_access_token(user.id)
+
+    response = await client.put(
+        "/api/v1/users/me/password",
+        json={
+            "current_password": "old_password",
+            "new_password": "new_password"
+        },
+        headers={
+            "Authorization": f"Bearer {access_token}"
+        }
+    )
+
+    assert response.status_code == 200
+    assert response.json()["detail"] == "Password updated successfully"
+
+    response = await client.put(
+        "/api/v1/users/me/password",
+        json={
+            "current_password": "old_password",
+            "new_password": "new_password"
+        },
+        headers={
+            "Authorization": f"Bearer {access_token}"
+        }
+    )
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Incorrect current password"
+
+    await prisma.user.delete(where={"id": user.id})
