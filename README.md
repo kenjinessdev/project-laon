@@ -36,21 +36,24 @@ cd ./backend/
 *create* `.env` *file*
 
 ```bash
-GOOGLE_CLIENT_ID=google-client
-GOOGLE_CLIENT_SECRET=secret
+
+GOOGLE_CLIENT_ID=google-client-id
+GOOGLE_CLIENT_SECRET=google-secret
 GOOGLE_REDIRECT_URI=http://localhost:8000/api/v1/auth/google/callback
 
-FACEBOOK_CLIENT_ID=your-facebook-app-id
-FACEBOOK_CLIENT_SECRET=your-facebook-app-secret
+FACEBOOK_CLIENT_ID=facebook-client-id
+FACEBOOK_CLIENT_SECRET=wow
 FACEBOOK_REDIRECT_URI=http://localhost:8000/api/v1/auth/facebook/callback
 
 JWT_SECRET="mcDRfPao1LsKPTeUDJJO96URrhiTi2BeYIh-8ihjdZU"
 SESSION_SECRET="m6aDYVIED0zNcvYLvStiJm6EjBxSRIKUfLZDBY2ArTY"
+DATABASE_URL="postgresql://postgres:test@localhost:5432/test"
+DIRECT_URL="supabase database direct url"
 
-# replace with actual database link
-DATABASE_URL="postgresql://test:test!@localhost:5432/test"
+SUPABASE_URL="supbase base url"
+SUPABASE_SERVICE_KEY="supabse service key"
+
 DEBUG=true
-
 ```
 
 ### 4. run prisma migration
