@@ -7,6 +7,7 @@ from src.models.cart import Cart, AddToCartRequest, UpdateQuantityRequest
 from src.core.limiter import limiter
 from collections import defaultdict
 from src.models.query_params import OrderQueryParams
+from uuid import UUID
 
 customer_order_route = APIRouter()
 
@@ -136,12 +137,14 @@ async def orders(
 
 
 @customer_order_route.get("/orders/{order_id}")
+@limiter.limit("50/minute")
 async def get_order(
-    order_id: str,
+    request: Request,
+    order_id: UUID,
     current_user: User = Depends(customer_role)
 ):
     order = await prisma.customerorder.find_first(
-        where={"id": order_id},
+        where={"id": str(order_id)},
         include={
             "customer": True,
             "farmer_order": True,
@@ -158,7 +161,7 @@ async def get_order(
         raise HTTPException(status_code=404, detail="Order not found")
 
     return {
-        "message": "Product found",
+        "message": "Order found",
         "order": order,
     }
 
@@ -167,16 +170,16 @@ async def get_order(
 @limiter.limit("10/minute")
 async def cancel_order(
     request: Request,
-    order_id: str,
+    order_id: UUID,
     current_user: User = Depends(customer_role)
 ):
-    order = await prisma.customerorder.find_unique(where={"id": order_id})
+    order = await prisma.customerorder.find_unique(where={"id": str(order_id)})
 
     if not order or order.customer_id != current_user.id:
         raise HTTPException(status_code=404, detail="Order not found")
 
     updated_order = await prisma.customerorder.update(
-        where={"id": order_id},
+        where={"id": str(order_id)},
         data={"status": "cancelled"}
     )
 

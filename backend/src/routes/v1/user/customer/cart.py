@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from src.dependencies.auth import require_role
 from src.db.prisma import prisma
 from src.models.user import User
 from src.models.cart import Cart, AddToCartRequest, UpdateQuantityRequest
+from src.core.limiter import limiter
+from uuid import UUID
 
 customer_cart_route = APIRouter()
 
@@ -10,7 +12,9 @@ customer_role = require_role("customer")
 
 
 @customer_cart_route.post("/add-to-cart", response_model=Cart)
+@limiter.limit("10/minute")
 async def add_to_cart(
+    request: Request,
     payload: AddToCartRequest,
     current_user: User = Depends(customer_role)
 ):
@@ -95,20 +99,23 @@ async def add_to_cart(
 
 
 @customer_cart_route.patch("/cart-items/{item_id}/quantity")
+@limiter.limit("20/minute")
 async def update_cart_item_quantity(
-    item_id: str,
+    request: Request,
+    item_id: UUID,
     payload: UpdateQuantityRequest,
     current_user: User = Depends(customer_role)
 ):
+
     cart_item = await prisma.cartitem.find_unique(
-        where={"id": item_id},
+        where={"id": str(item_id)},
         include={"cart": True}
     )
     if not cart_item or cart_item.cart.customer_id != current_user.id:
         raise HTTPException(status_code=404, detail="Cart item not found")
 
     updated_item = await prisma.cartitem.update(
-        where={"id": item_id},
+        where={"id": str(item_id)},
         data={"quantity": payload.quantity}
     )
 
@@ -116,26 +123,30 @@ async def update_cart_item_quantity(
 
 
 @customer_cart_route.delete("/cart-items/{item_id}/delete")
+@limiter.limit("10/minute")
 async def delete_cart_item(
-    item_id: str,
+    request: Request,
+    item_id: UUID,
     current_user: User = Depends(customer_role)
 ):
 
     cart_item = await prisma.cartitem.find_unique(
-        where={"id": item_id},
+        where={"id": str(item_id)},
         include={"cart": True}
     )
 
     if not cart_item or cart_item.cart.customer_id != current_user.id:
         raise HTTPException(status_code=404, detail="Cart item not found")
 
-    await prisma.cartitem.delete(where={"id": item_id})
+    await prisma.cartitem.delete(where={"id": str(item_id)})
 
-    return {"detail": "Cart item deleted successfully"}
+    return {"message": "Cart item deleted successfully"}
 
 
 @customer_cart_route.get("/cart")
+@limiter.limit("60/minute")
 async def get_cart(
+    request: Request,
     current_user: User = Depends(customer_role)
 ):
     cart = await prisma.cart.find_first(
@@ -158,4 +169,11 @@ async def get_cart(
         }
     )
 
-    return cart
+    if not cart:
+        return {"message": "No active cart found"}
+
+    return {
+        "Message": "Active cart found",
+        "cart_items_count": len(cart.cart_items),
+        "cart": cart
+    }
