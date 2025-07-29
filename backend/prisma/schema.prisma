@@ -89,7 +89,7 @@ model Product {
   images     ProductImage[]
   reviews    Review[]
   cart_items CartItem[]
-  order_item  OrderItem[]
+  order_item OrderItem[]
 
   @@map("products")
 }
@@ -156,12 +156,12 @@ model CartItem {
 
 // ==================== Order Models ====================
 model CustomerOrder {
-  id                  String      @id @default(uuid()) @db.Uuid
-  customer_id         String      @db.Uuid
-  total_price         Decimal
-  status              OrderStatus
-  updated_at          DateTime    @updatedAt
-  created_at          DateTime    @default(now())
+  id          String      @id @default(uuid()) @db.Uuid
+  customer_id String      @db.Uuid
+  total_price Decimal
+  status      OrderStatus
+  updated_at  DateTime    @updatedAt
+  created_at  DateTime    @default(now())
 
   customer     User          @relation(fields: [customer_id], references: [id])
   farmer_order FarmerOrder[]
@@ -189,8 +189,8 @@ model FarmerOrder {
   subtotal          Decimal
   created_at        DateTime          @default(now())
 
-  order     CustomerOrder @relation(fields: [customer_order_id], references: [id])
-  farmer    User          @relation(fields: [farmer_id], references: [id])
+  order      CustomerOrder @relation(fields: [customer_order_id], references: [id])
+  farmer     User          @relation(fields: [farmer_id], references: [id])
   order_item OrderItem[]
 
   @@map("farmer_orders")
@@ -215,8 +215,8 @@ model OrderItem {
   quantity          Int
   price             Decimal
 
-  order     CustomerOrder @relation(fields: [customer_order_id], references: [id])
-  product   Product       @relation(fields: [product_id], references: [id])
+  order      CustomerOrder @relation(fields: [customer_order_id], references: [id])
+  product    Product       @relation(fields: [product_id], references: [id])
   order_farm FarmerOrder   @relation(fields: [farmer_order_id], references: [id])
 
   @@map("order_items")
