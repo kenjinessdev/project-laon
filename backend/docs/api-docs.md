@@ -120,7 +120,7 @@ Authorization: Bearer <access_token>
 
 ---
 
-### Customer Dashboard
+# Customer Dashboard
 
 - **GET** `/customer/dashboard`  
   Secured route. Requires Bearer Token.
@@ -131,8 +131,6 @@ Authorization: Bearer <access_token>
 ```
 
 # Customer endpoints
-
-# CART
 
 ## Add to Cart
 
