@@ -187,3 +187,38 @@ async def cancel_order(
         "message": "Order cancelled successfully",
         "order": updated_order
     }
+
+
+@customer_order_route.post("/orders/{order_id}/pay")
+async def confirm_order(
+    request: Request,
+    order_id: UUID,
+    current_user: User = Depends(customer_role)
+):
+    order = await prisma.customerorder.find_unique(where={"id": str(order_id)})
+
+    if not order or order.customer_id != current_user.id:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    if order.status != "pending":
+        raise HTTPException(
+            status_code=400, detail="Order is not in pending status")
+
+    updated_order = await prisma.customerorder.update(
+        where={"id": str(order_id)},
+        data={"status": "paid"}
+    )
+
+    return {
+        "message": "Order payment confirmed",
+        "order": updated_order
+    }
+
+
+@customer_order_route.post("/orders/{order_id}/review")
+async def review_order(
+    order_id: UUID,
+    current_user: User = Depends(customer_role)
+):
+    # Placeholder for order review logic
+    raise HTTPException(status_code=501, detail="Order review not implemented")
