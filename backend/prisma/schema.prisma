@@ -221,3 +221,31 @@ model OrderItem {
 
   @@map("order_items")
 }
+
+// ==================== Notification Models ====================
+model Notification {
+  id         String           @id @default(uuid())
+  user_id    String // recipient of the notification
+  actor_id   String? // person who triggered the action
+  actor_name String? // optional if you want to store static names
+  title      String
+  message    String
+  type       NotificationType
+  data       Json? // for extra stuff like order ID, amount, etc.
+  is_read    Boolean          @default(false)
+  created_at DateTime         @default(now())
+  updated_at DateTime         @updatedAt
+
+  @@index([user_id])
+  @@map("notifications")
+}
+
+enum NotificationType {
+  order_placed
+  product_updated
+  payment_received
+  low_stock
+  order_cancelled
+  message_received
+  bulk_order
+}

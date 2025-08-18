@@ -53,6 +53,10 @@ DIRECT_URL="supabase database direct url"
 SUPABASE_URL="supbase base url"
 SUPABASE_SERVICE_KEY="supabse service key"
 
+ALLOWED_ORIGINS=["http://localhost:3000","http://127.0.0.1:3000","https://myapp.com"]
+
+REDIS_URL="redis://localhost:6379"
+
 DEBUG=true
 ```
 

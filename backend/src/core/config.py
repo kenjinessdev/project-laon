@@ -28,6 +28,12 @@ class Settings(BaseSettings):  # type: ignore
     ORDER_BY_FIELDS: ClassVar[List[str]] = [
         "name", "price_per_unit", "created_at", "updated_at"]
 
+    ALLOWED_ORIGINS: List[str] = [
+        "http://localhost:3000",
+    ]
+
+    REDIS_URL: str = "redis://localhost:6379"
+
     DEBUG: bool = True
 
     class Config:

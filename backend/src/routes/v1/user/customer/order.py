@@ -1,13 +1,13 @@
-from fastapi import Query
 from fastapi import APIRouter, Depends, HTTPException, Request
 from src.dependencies.auth import require_role
 from src.db.prisma import prisma
 from src.models.user import User
-from src.models.cart import Cart, AddToCartRequest, UpdateQuantityRequest
 from src.core.limiter import limiter
+from src.core.config import settings
 from collections import defaultdict
 from src.models.query_params import OrderQueryParams
 from uuid import UUID
+from src.routes.v1.realtime.notification import _send_notification
 
 customer_order_route = APIRouter()
 
@@ -48,7 +48,7 @@ async def checkout(
         data={
             "customer_id": current_user.id,
             "total_price": total,
-            "status": "pending",
+            "status": "paid",
         }
     )
 
@@ -85,6 +85,24 @@ async def checkout(
         where={"id": cart.id},
         data={"is_active": False}
     )
+
+    # send notification to farmer
+    for farmer_id in farmer_groups.keys():
+        payload = {
+            "title": "New Order",
+            "message":
+                f"You have a new order from {
+                    current_user.first_name} {current_user.last_name}",
+            "user_id": farmer_id,
+            "actor_id": current_user.id,
+            "actor_name":
+                f"{current_user.first_name} {current_user.last_name}",
+            "type": "order_placed",
+            "data": {"order_id": str(customer_order.id)}
+        }
+        await _send_notification(payload)
+
+    # continue
 
     return {"message": "Checkout successful", "order": customer_order}
 
@@ -187,3 +205,39 @@ async def cancel_order(
         "message": "Order cancelled successfully",
         "order": updated_order
     }
+
+
+@customer_order_route.post("/orders/{order_id}/pay")
+@limiter.limit("10/minute")
+async def confirm_order(
+    request: Request,
+    order_id: UUID,
+    current_user: User = Depends(customer_role)
+):
+    order = await prisma.customerorder.find_unique(where={"id": str(order_id)})
+
+    if not order or order.customer_id != current_user.id:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    if order.status != "pending":
+        raise HTTPException(
+            status_code=400, detail="Order is not in pending status")
+
+    updated_order = await prisma.customerorder.update(
+        where={"id": str(order_id)},
+        data={"status": "paid"}
+    )
+
+    return {
+        "message": "Order payment confirmed",
+        "order": updated_order
+    }
+
+
+@customer_order_route.post("/orders/{order_id}/review")
+async def review_order(
+    order_id: UUID,
+    current_user: User = Depends(customer_role)
+):
+    # Placeholder for order review logic
+    raise HTTPException(status_code=501, detail="Order review not implemented")
