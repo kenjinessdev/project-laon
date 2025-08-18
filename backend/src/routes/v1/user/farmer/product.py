@@ -39,7 +39,8 @@ async def my_products(
     if order_by not in ALLOWED_ORDER_FIELDS:
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid order_by field. Allowed: {', '.join(ALLOWED_ORDER_FIELDS)}"
+            detail=f"Invalid order_by field. Allowed: {
+                ', '.join(ALLOWED_ORDER_FIELDS)}"
         )
 
     if order.lower() not in ["asc", "desc"]:
@@ -142,7 +143,8 @@ async def create_product(
                 filename = f"{uuid.uuid4()}_{image.filename}"
                 content = await image.read()
 
-                upload_url = f"{settings.SUPABASE_URL}/storage/v1/object/{product_image_bucket}/{filename}"
+                upload_url = f"{
+                    settings.SUPABASE_URL}/storage/v1/object/{product_image_bucket}/{filename}"
                 headers = {
                     "Authorization": f"Bearer {settings.SUPABASE_SERVICE_KEY}",
                     "Content-Type": image.content_type
@@ -154,7 +156,8 @@ async def create_product(
                 if response.status_code != 200:
                     raise Exception("Image upload failed")
 
-                public_url = f"{settings.SUPABASE_URL}/storage/v1/object/public/{product_image_bucket}/{filename}"
+                public_url = f"{
+                    settings.SUPABASE_URL}/storage/v1/object/public/{product_image_bucket}/{filename}"
 
                 await prisma.productimage.create(data={
                     "product_id": product.id,
@@ -227,7 +230,8 @@ async def upload_product_image(
     filename = f"{uuid.uuid4()}_{file.filename}"
     file_content = await file.read()
 
-    upload_url = f"{settings.SUPABASE_URL}/storage/v1/object/{product_image_bucket}/{filename}"
+    upload_url = f"{
+        settings.SUPABASE_URL}/storage/v1/object/{product_image_bucket}/{filename}"
     headers = {
         "Authorization": f"Bearer {settings.SUPABASE_SERVICE_KEY}",
         "Content-Type": file.content_type
@@ -238,7 +242,8 @@ async def upload_product_image(
     if response.status_code != 200:
         raise HTTPException(status_code=500, detail="Upload failed")
 
-    public_url = f"{settings.SUPABASE_URL}/storage/v1/object/public/{product_image_bucket}/{filename}"
+    public_url = f"{
+        settings.SUPABASE_URL}/storage/v1/object/public/{product_image_bucket}/{filename}"
 
     await prisma.productimage.create(data={
         "product_id": product.id,
@@ -289,3 +294,8 @@ async def delete_product_image(
     await prisma.productimage.delete(where={"id": image_id})
 
     return {"detail": "Image deleted successfully"}
+
+
+@farmer_product_router.patch("/product/{product_id}/status")
+async def update_product_status():
+    pass
