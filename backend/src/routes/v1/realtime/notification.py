@@ -18,7 +18,7 @@ import uuid
 
 router = APIRouter()
 
-broadcast = Broadcast("redis://localhost:6379")
+broadcast = Broadcast(settings.REDIS_URL)
 
 INSTANCE_ID = str(uuid.uuid4())
 clients = set()

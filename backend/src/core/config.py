@@ -24,10 +24,15 @@ class Settings(BaseSettings):  # type: ignore
 
     SUPABASE_URL: str
     SUPABASE_SERVICE_KEY: str
-    SERVER_BASE_URL: str = "http://localhost:8000"
 
     ORDER_BY_FIELDS: ClassVar[List[str]] = [
         "name", "price_per_unit", "created_at", "updated_at"]
+
+    ALLOWED_ORIGINS: List[str] = [
+        "http://localhost:3000",
+    ]
+
+    REDIS_URL: str = "redis://localhost:6379"
 
     DEBUG: bool = True
 

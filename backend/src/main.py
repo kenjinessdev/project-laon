@@ -19,11 +19,13 @@ app.add_middleware(SessionMiddleware, secret_key=settings.SESSION_SECRET)
 app.add_middleware(
     CORSMiddleware,
     # replace allow_origin with react localhost
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000"] + settings.ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+print(settings.ALLOWED_ORIGINS[0])
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, rate_limit_handler)
