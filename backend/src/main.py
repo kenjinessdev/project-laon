@@ -11,7 +11,8 @@ from src.core.limiter import limiter, rate_limit_handler
 from src.core.exception_handlers import validation_exception_handler
 
 app = FastAPI(
-    title="LAON"
+    title="LAON",
+    openapi_url="/openapi.json"
 )
 
 app.add_middleware(GZipMiddleware, minimum_size=1000)
