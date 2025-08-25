@@ -1,58 +1,89 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useForm } from "@tanstack/react-form";
-import { zodValidator } from "@tanstack/zod-validator";
-import { zLoginSchema, zLoginApiV1AuthLoginPostData } from "@/client/zod.gen"; // Import the Zod schema
-import { loginApiV1AuthLoginPost } from "@/client/sdk.gen"; // Import the API call
+import { zLoginSchema } from "@/client/zod.gen"; 
 import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation } from "@tanstack/react-query";
+import { loginApiV1AuthLoginPostMutation } from "@/client/@tanstack/react-query.gen";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
 export const Route = createFileRoute("/login")({
   component: RouteComponent,
 });
 
-// Infer the TypeScript type from the Zod schema
 type LoginSchemaType = z.infer<typeof zLoginSchema>;
 
 export function LoginForm() {
-  const form = useForm<LoginSchemaType>({
+
+  const onSubmit = (data: LoginSchemaType) => {
+    useMutation({
+      ...loginApiV1AuthLoginPostMutation(),
+      onSuccess: (data) => {
+        toast.success('Login successful!', {
+          description: 'Welcome back!',
+        }); 
+      },
+      onError: (error) => {
+        toast.error('Login failed!', {
+          description: error.message,
+        });
+      }
+    })
+  }
+
+  const form = useForm({
+    resolver: zodResolver(zLoginSchema),
     defaultValues: {
       email: "",
       password: "",
     },
-    validator: zodValidator({ schema: zLoginSchema }),
-    onSubmit: async (values) => {
-      try {
-        // Use the generated API call
-        const response = await loginApiV1AuthLoginPost({
-          body: values,
-        });
-
-        // Handle successful login (e.g., redirect, store token)
-        console.log("Login successful!", response);
-      } catch (error) {
-        // Handle login error (e.g., display error message)
-        console.error("Login failed:", error);
-        form.setError("root", "Invalid credentials");
-      }
-    },
+    mode: "onChange",
   });
 
   return (
-    <form onSubmit={form.handleSubmit}>
-      <div>
-        <label htmlFor="email">Email:</label>
-        <input type="email" id="email" {...form.register("email")} />
-        {form.fieldErrors.email && <div>{form.fieldErrors.email}</div>}
-      </div>
-      <div>
-        <label htmlFor="password">Password:</label>
-        <input type="password" id="password" {...form.register("password")} />
-        {form.fieldErrors.password && <div>{form.fieldErrors.password}</div>}
-      </div>
-      <button type="submit" disabled={!form.isValid}>
-        Login
-      </button>
-      {form.options.errorMessage && <div>{form.options.errorMessage}</div>}
-    </form>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input type="email" placeholder="Enter your email" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="Enter your password" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" disabled={!form.formState.isValid}>
+          Login
+        </Button>
+      </form>
+    </Form>
   );
 }
 
