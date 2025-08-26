@@ -1,7 +1,8 @@
-from pydantic import BaseModel, constr, condecimal, UUID4
+from pydantic import BaseModel, constr, validator
 from typing import Optional, Any, List
 from enum import Enum
 from datetime import datetime
+from src.models.pagination import Pagination
 
 
 class ProductStatus(str, Enum):
@@ -31,7 +32,27 @@ class ProductBase(BaseModel):
     reviews: Optional[List[Any]] = None
 
 
-class ProductCreate(ProductBase):
+class ProductCreate(BaseModel):
+    name: constr(max_length=100)
+    description: str
+    unit: constr(max_length=20)
+    price_per_unit: float
+    stock_quantity: int
+    status: str
+    visibility: str
+
+    @validator("price_per_unit")
+    def positive_price(cls, value):
+        if value <= 0:
+            raise ValueError("Price per unit must be greater than zero")
+        return value
+
+    @validator("stock_quantity")
+    def non_negative_stock(cls, value):
+        if value < 0:
+            raise ValueError("Stock quantity cannot be negative")
+        return value
+
     pass
 
 
@@ -71,3 +92,7 @@ class UploadProductImageBase(ProductImageBase):
 class ProductImage(ProductImageBase):
     int: str
     created_at: datetime
+
+
+class PaginatedProducts(Pagination):
+    body: List[Product]

@@ -1,4 +1,13 @@
-from fastapi import APIRouter, Depends, Request, HTTPException, UploadFile, File, Form, Query
+from fastapi import (
+    APIRouter,
+    Depends,
+    Request,
+    HTTPException,
+    UploadFile,
+    File,
+    Form,
+    Query
+)
 from src.dependencies.auth import require_role
 from src.models.product import Product, ProductUpdate
 from src.models.user import User
@@ -7,9 +16,11 @@ from src.core.limiter import limiter
 from typing import List, Optional
 from datetime import datetime
 from src.core.config import settings
-from decimal import Decimal
 import requests
 import uuid
+from src.models.product import PaginatedProducts
+from src.models.error import BadRequestErrorResponse
+from src.utils.error import error_response
 
 
 farmer_product_router = APIRouter()
@@ -22,7 +33,15 @@ product_image_bucket = "product-images"
 ALLOWED_ORDER_FIELDS = settings.ORDER_BY_FIELDS
 
 
-@farmer_product_router.get("/products", response_model=List[Product])
+@farmer_product_router.get(
+    "/products",
+    response_model=PaginatedProducts,
+    responses={
+        400: {
+            "description": "Bad Request",
+            "model": BadRequestErrorResponse
+        }
+    })
 async def my_products(
     name: Optional[str] = Query(None),
     status: Optional[str] = Query(None),
@@ -37,16 +56,20 @@ async def my_products(
 ):
     # Validate `order_by`
     if order_by not in ALLOWED_ORDER_FIELDS:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Invalid order_by field. Allowed: {
+        return error_response(
+            400,
+            "Bad request",
+            field="order_by",
+            message=f"Invalid order_by field. Allowed: {
                 ', '.join(ALLOWED_ORDER_FIELDS)}"
         )
 
     if order.lower() not in ["asc", "desc"]:
-        raise HTTPException(
-            status_code=400,
-            detail="Invalid order value. Use 'asc' or 'desc'"
+        return error_response(
+            400,
+            "Bad request",
+            field="order",
+            message="Invalid order value. Use 'asc' or 'desc'"
         )
 
     filters = {
@@ -81,7 +104,13 @@ async def my_products(
         include={"images": True}
     )
 
-    return products
+    # return products
+    return {
+        "body": products,
+        "total": len(products),
+        "skip": skip,
+        "take": take
+    }
 
 
 @farmer_product_router.get("/product/{product_id}", response_model=Product)
@@ -118,10 +147,28 @@ async def create_product(
     # Validate input lengths
     if len(name) > 100:
         raise HTTPException(
-            status_code=422, detail="Name must be 100 characters or fewer")
+            status_code=422,
+            detail={
+                "detail": "Validation failed",
+                "missing_fields": None,
+                "format_errors": [
+                    {"field": "name", "message": "Name must be 100 characters or fewer"}
+                ],
+                "other_errors": None,
+            }
+        )
     if len(unit) > 20:
         raise HTTPException(
-            status_code=422, detail="Unit must be 20 characters or fewer")
+            status_code=422,
+            detail={
+                "detail": "Validation failed",
+                "missing_fields": None,
+                "format_errors": [
+                    {"field": "unit", "message": "Unit must be 20 characters or fewer"}
+                ],
+                "other_errors": None,
+            }
+        )
 
     # Create the product
     product = await prisma.product.create(data={
@@ -271,8 +318,6 @@ async def delete_product_image(
     if not image or image.product_id != product_id:
         raise HTTPException(status_code=404, detail="Image not found")
 
-    # Extract just the filename from the public URL
-    # Assuming the format: https://your-project.supabase.co/storage/v1/object/public/product-images/{filename}
     try:
         filename = image.image_public_url.split("/")[-1]
     except Exception:
@@ -297,5 +342,8 @@ async def delete_product_image(
 
 
 @farmer_product_router.patch("/product/{product_id}/status")
-async def update_product_status():
+async def update_product_status(
+    product_id: str,
+    current_user: User = Depends(farmer_role)
+):
     pass

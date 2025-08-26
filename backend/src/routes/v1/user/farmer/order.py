@@ -12,7 +12,6 @@ from src.core.limiter import limiter
 from src.models.query_params import OrderQueryParamsStatus
 from src.models.order import OrderStatusUpdate
 from src.routes.v1.realtime.notification import _send_notification
-from src.models.notification import NotificationPayload
 
 farmer_order_route = APIRouter()
 
@@ -218,6 +217,35 @@ async def update_product_status(
             "actor_name":
             f"{current_user.first_name} {current_user.last_name}",
             "type": "order_placed",
+            "data": {"order_id": str(updated_order.order.id)}
+        }
+        await _send_notification(payload)
+
+    elif updated_order.status == "delivered":
+        payload = {
+            "title": "Your order has been delivered",
+            "message":
+            f"Your order with ID {updated_order.order.id} has been delivered by {
+                current_user.first_name} {current_user.last_name}.",
+            "user_id": updated_order.order.customer_id,
+            "actor_id": current_user.id,
+            "actor_name":
+            f"{current_user.first_name} {current_user.last_name}",
+            "type": "order_delivered",
+            "data": {"order_id": str(updated_order.order.id)}
+        }
+        await _send_notification(payload)
+    elif updated_order.status == "cancelled":
+        payload = {
+            "title": "Your order has been cancelled",
+            "message":
+            f"Your order with ID {updated_order.order.id} has been cancelled by {
+                current_user.first_name} {current_user.last_name}.",
+            "user_id": updated_order.order.customer_id,
+            "actor_id": current_user.id,
+            "actor_name":
+            f"{current_user.first_name} {current_user.last_name}",
+            "type": "order_cancelled",
             "data": {"order_id": str(updated_order.order.id)}
         }
         await _send_notification(payload)

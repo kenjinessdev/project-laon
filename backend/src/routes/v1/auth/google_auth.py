@@ -6,6 +6,7 @@ from datetime import datetime
 from src.core.config import settings
 from src.core.limiter import limiter
 from src.core.oauth import oauth
+from src.models.user import OAuthenticatedUser
 
 
 google_router = APIRouter()
@@ -32,7 +33,11 @@ async def google_login(request: Request, role: str = "customer"):
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
-@google_router.get("/google/callback", name="google_callback")
+@google_router.get(
+    "/google/callback",
+    name="google_callback",
+    response_model=OAuthenticatedUser
+)
 @limiter.limit("10/minute")
 async def google_callback(request: Request, response: Response):
     try:
