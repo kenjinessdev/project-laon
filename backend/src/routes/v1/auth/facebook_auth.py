@@ -1,11 +1,11 @@
-from fastapi import Request, APIRouter, HTTPException, Response
+from fastapi import Request, APIRouter, HTTPException, Response, Query, responses
 from src.db.prisma import prisma
 from datetime import datetime
 from src.core.config import settings
 from src.core.limiter import limiter
-from src.utils.jwt import create_access_token, create_refresh_token, issue_tokens
+from src.utils.jwt import issue_tokens
 from src.core.oauth import oauth
-from jose import JWTError
+from src.models.user import OAuthenticatedUser
 
 facebook_router = APIRouter()
 
@@ -22,15 +22,29 @@ oauth.register(
 )
 
 
-@facebook_router.get("/facebook")
+@facebook_router.get(
+    "/facebook",
+    response_class=responses.RedirectResponse,
+    summary="Start Facebook OAuth2 flow"
+)
 async def facebook_login(request: Request):
+    """
+    Redirects the user to Facebook for authentication.
+    """
     redirect_uri = settings.FACEBOOK_REDIRECT_URI
     return await oauth.facebook.authorize_redirect(request, redirect_uri)
 
 
-@facebook_router.get("/facebook/callback")
+@facebook_router.get("/facebook/callback", response_model=OAuthenticatedUser)
 @limiter.limit("10/minute")
-async def facebook_callback(request: Request, response: Response):
+async def facebook_callback(
+        request: Request,
+        response: Response,
+        role: str = Query(
+            "customer",
+            description="User role to assign if creating a new account"
+        )
+):
     try:
         token = await oauth.facebook.authorize_access_token(request)
 
@@ -54,7 +68,6 @@ async def facebook_callback(request: Request, response: Response):
             # Split full name
             first_name, *last_parts = name.split(" ")
             last_name = " ".join(last_parts) if last_parts else ""
-            role = request.session.get("role", "customer")
 
             # Parse birthday string
             try:

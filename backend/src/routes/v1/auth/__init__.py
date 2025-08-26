@@ -13,7 +13,8 @@ from jose import JWTError
 from src.utils.jwt import decode_token, issue_tokens
 from src.routes.v1.auth.facebook_auth import facebook_router
 from src.routes.v1.auth.google_auth import google_router
-
+from src.models.user import AuthenticatedUser
+from src.models.error import ValidationErrorResponse
 
 # from src.models.user import UserOut, LoginSchema
 
@@ -23,7 +24,11 @@ auth_router.include_router(facebook_router)
 auth_router.include_router(google_router)
 
 
-@auth_router.post("/register")
+@auth_router.post(
+    "/register",
+    response_model=AuthenticatedUser,
+    responses={422: {"model": ValidationErrorResponse}}
+)
 @limiter.limit("5/minute")
 async def register(request: Request,  response: Response, user: UserCreate):
     try:
@@ -66,7 +71,7 @@ async def register(request: Request,  response: Response, user: UserCreate):
         raise HTTPException(status_code=400, detail=detail)
 
 
-@auth_router.post("/login")
+@auth_router.post("/login", response_model=AuthenticatedUser)
 @limiter.limit("5/minute")
 async def login(request: Request, response: Response, creds: LoginSchema):
     user = await prisma.user.find_unique(where={"email": creds.email})
@@ -82,7 +87,7 @@ async def login(request: Request, response: Response, creds: LoginSchema):
     }
 
 
-@auth_router.post("/refresh")
+@auth_router.post("/refresh", response_model=AuthenticatedUser)
 async def refresh_token(request: Request):
     token = request.cookies.get("refresh_token")
     if not token:
