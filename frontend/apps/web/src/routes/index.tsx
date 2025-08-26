@@ -1,3 +1,5 @@
+// THIS PAGE WILL SERVE AS THE LANDING PAGE
+
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({

@@ -1,0 +1,2374 @@
+openapi: 3.1.0
+info:
+  title: LAON
+  version: 0.1.0
+paths:
+  /api/v1/auth/facebook:
+    get:
+      summary: Facebook Login
+      operationId: facebook_login_api_v1_auth_facebook_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/v1/auth/facebook/callback:
+    get:
+      summary: Facebook Callback
+      operationId: facebook_callback_api_v1_auth_facebook_callback_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/v1/auth/google:
+    get:
+      summary: Google Login
+      operationId: google_login_api_v1_auth_google_get
+      parameters:
+        - name: role
+          in: query
+          required: false
+          schema:
+            type: string
+            default: customer
+            title: Role
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/auth/google/callback:
+    get:
+      summary: Google Callback
+      operationId: google_callback_api_v1_auth_google_callback_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/v1/auth/register:
+    post:
+      summary: Register
+      operationId: register_api_v1_auth_register_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/auth/login:
+    post:
+      summary: Login
+      operationId: login_api_v1_auth_login_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginSchema'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/auth/refresh:
+    post:
+      summary: Refresh Token
+      operationId: refresh_token_api_v1_auth_refresh_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/v1/farmer/products:
+    get:
+      summary: My Products
+      operationId: my_products_api_v1_farmer_products_get
+      security:
+        - OAuth2PasswordBearer: []
+      parameters:
+        - name: name
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: 'null'
+            title: Name
+        - name: status
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: 'null'
+            title: Status
+        - name: visibility
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: 'null'
+            title: Visibility
+        - name: min_price
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: number
+              - type: 'null'
+            title: Min Price
+        - name: max_price
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: number
+              - type: 'null'
+            title: Max Price
+        - name: skip
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+            title: Skip
+        - name: take
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+            title: Take
+        - name: order_by
+          in: query
+          required: false
+          schema:
+            type: string
+            default: created_at
+            title: Order By
+        - name: order
+          in: query
+          required: false
+          schema:
+            type: string
+            default: desc
+            title: Order
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/src__models__product__Product'
+                title: Response My Products Api V1 Farmer Products Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/api/v1/farmer/product/{product_id}':
+    get:
+      summary: View Product
+      operationId: view_product_api_v1_farmer_product__product_id__get
+      security:
+        - OAuth2PasswordBearer: []
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Product Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/src__models__product__Product'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    patch:
+      summary: Update Product
+      operationId: update_product_api_v1_farmer_product__product_id__patch
+      security:
+        - OAuth2PasswordBearer: []
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Product Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/src__models__product__Product'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      summary: Delete Product
+      operationId: delete_product_api_v1_farmer_product__product_id__delete
+      security:
+        - OAuth2PasswordBearer: []
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Product Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/farmer/product:
+    post:
+      summary: Create Product
+      operationId: create_product_api_v1_farmer_product_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_create_product_api_v1_farmer_product_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/src__models__product__Product'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - OAuth2PasswordBearer: []
+  '/api/v1/farmer/product/{product_id}/images':
+    post:
+      summary: Upload Product Image
+      operationId: upload_product_image_api_v1_farmer_product__product_id__images_post
+      security:
+        - OAuth2PasswordBearer: []
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Product Id
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_upload_product_image_api_v1_farmer_product__product_id__images_post'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/src__models__product__Product'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/api/v1/farmer/product/{product_id}/images/{image_id}':
+    delete:
+      summary: Delete Product Image
+      operationId: delete_product_image_api_v1_farmer_product__product_id__images__image_id__delete
+      security:
+        - OAuth2PasswordBearer: []
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Product Id
+        - name: image_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Image Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/api/v1/farmer/product/{product_id}/status':
+    patch:
+      summary: Update Product Status
+      operationId: update_product_status_api_v1_farmer_product__product_id__status_patch
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/v1/farmer/orders:
+    get:
+      summary: Orders
+      operationId: orders_api_v1_farmer_orders_get
+      security:
+        - OAuth2PasswordBearer: []
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: 'null'
+            default: ''
+            title: Search
+        - name: skip
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+            title: Skip
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+            title: Limit
+        - name: status
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: 'null'
+            default: ''
+            title: Status
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/api/v1/farmer/orders/{order_id}/accept':
+    post:
+      summary: Accept Order
+      operationId: accept_order_api_v1_farmer_orders__order_id__accept_post
+      security:
+        - OAuth2PasswordBearer: []
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Order Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/api/v1/farmer/orders/{order_id}/status':
+    patch:
+      summary: Update Product Status
+      operationId: update_product_status_api_v1_farmer_orders__order_id__status_patch
+      security:
+        - OAuth2PasswordBearer: []
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Order Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderStatusUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/farmer/dashboard:
+    get:
+      summary: Farmer Dashboard
+      operationId: farmer_dashboard_api_v1_farmer_dashboard_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+        - OAuth2PasswordBearer: []
+  /api/v1/customer/add-to-cart:
+    post:
+      summary: Add To Cart
+      operationId: add_to_cart_api_v1_customer_add_to_cart_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddToCartRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/src__models__cart__Cart'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - OAuth2PasswordBearer: []
+  '/api/v1/customer/cart-items/{item_id}/quantity':
+    patch:
+      summary: Update Cart Item Quantity
+      operationId: update_cart_item_quantity_api_v1_customer_cart_items__item_id__quantity_patch
+      security:
+        - OAuth2PasswordBearer: []
+      parameters:
+        - name: item_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Item Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateQuantityRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/api/v1/customer/cart-items/{item_id}/delete':
+    delete:
+      summary: Delete Cart Item
+      operationId: delete_cart_item_api_v1_customer_cart_items__item_id__delete_delete
+      security:
+        - OAuth2PasswordBearer: []
+      parameters:
+        - name: item_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Item Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/customer/cart:
+    get:
+      summary: Get Cart
+      operationId: get_cart_api_v1_customer_cart_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+        - OAuth2PasswordBearer: []
+  /api/v1/customer/checkout:
+    post:
+      summary: Checkout
+      operationId: checkout_api_v1_customer_checkout_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+        - OAuth2PasswordBearer: []
+  /api/v1/customer/orders:
+    get:
+      summary: Orders
+      operationId: orders_api_v1_customer_orders_get
+      security:
+        - OAuth2PasswordBearer: []
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: 'null'
+            default: ''
+            title: Search
+        - name: skip
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+            title: Skip
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+            title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/api/v1/customer/orders/{order_id}':
+    get:
+      summary: Get Order
+      operationId: get_order_api_v1_customer_orders__order_id__get
+      security:
+        - OAuth2PasswordBearer: []
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Order Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/api/v1/customer/orders/{order_id}/cancel':
+    post:
+      summary: Cancel Order
+      operationId: cancel_order_api_v1_customer_orders__order_id__cancel_post
+      security:
+        - OAuth2PasswordBearer: []
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Order Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/api/v1/customer/orders/{order_id}/pay':
+    post:
+      summary: Confirm Order
+      operationId: confirm_order_api_v1_customer_orders__order_id__pay_post
+      security:
+        - OAuth2PasswordBearer: []
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Order Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/api/v1/customer/orders/{order_id}/review':
+    post:
+      summary: Review Order
+      operationId: review_order_api_v1_customer_orders__order_id__review_post
+      security:
+        - OAuth2PasswordBearer: []
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Order Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/customer/dashboard:
+    get:
+      summary: Farmer Dashboard
+      operationId: farmer_dashboard_api_v1_customer_dashboard_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+        - OAuth2PasswordBearer: []
+  /api/v1/users/me:
+    get:
+      summary: Get Me
+      operationId: get_me_api_v1_users_me_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/prisma__models__User'
+      security:
+        - OAuth2PasswordBearer: []
+    patch:
+      summary: Update Profile
+      operationId: update_profile_api_v1_users_me_patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/prisma__models__User'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - OAuth2PasswordBearer: []
+  /api/v1/users/me/password:
+    patch:
+      summary: Change Password
+      operationId: change_password_api_v1_users_me_password_patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordChangeRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - OAuth2PasswordBearer: []
+  /api/v1/users/me/address:
+    post:
+      summary: Create Address
+      operationId: create_address_api_v1_users_me_address_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressIn'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/src__models__address__Address'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - OAuth2PasswordBearer: []
+  '/api/v1/users/me/address/{address_id}':
+    patch:
+      summary: Update Address
+      operationId: update_address_api_v1_users_me_address__address_id__patch
+      security:
+        - OAuth2PasswordBearer: []
+      parameters:
+        - name: address_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Address Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/src__models__address__Address'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      summary: Delete Address
+      operationId: delete_address_api_v1_users_me_address__address_id__delete
+      security:
+        - OAuth2PasswordBearer: []
+      parameters:
+        - name: address_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Address Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/users/me/avatar:
+    post:
+      summary: Add Avatar
+      operationId: add_avatar_api_v1_users_me_avatar_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_add_avatar_api_v1_users_me_avatar_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - OAuth2PasswordBearer: []
+  /api/v1/products:
+    get:
+      summary: Get Products
+      operationId: get_products_api_v1_products_get
+      parameters:
+        - name: skip
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+            title: Skip
+        - name: take
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+            title: Take
+        - name: search
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: 'null'
+            title: Search
+        - name: min_price
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: number
+              - type: 'null'
+            title: Min Price
+        - name: max_price
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: number
+              - type: 'null'
+            title: Max Price
+        - name: order_by
+          in: query
+          required: false
+          schema:
+            type: string
+            default: created_at
+            title: Order By
+        - name: order
+          in: query
+          required: false
+          schema:
+            type: string
+            default: desc
+            title: Order
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/send-notification:
+    post:
+      summary: Send Notification
+      operationId: send_notification_api_v1_send_notification_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationPayload'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/:
+    get:
+      summary: V1
+      operationId: v1_api_v1__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /:
+    get:
+      summary: Read Root
+      operationId: read_root__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+components:
+  schemas:
+    AddToCartRequest:
+      properties:
+        product_id:
+          type: string
+          title: Product Id
+        quantity:
+          type: integer
+          exclusiveMinimum: 0
+          title: Quantity
+          description: Quantity must be greater than 0
+      type: object
+      required:
+        - product_id
+        - quantity
+      title: AddToCartRequest
+    AddressIn:
+      properties:
+        street:
+          type: string
+          title: Street
+        street2:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Street2
+        barangay:
+          type: string
+          title: Barangay
+        city:
+          type: string
+          maxLength: 50
+          title: City
+        region:
+          type: string
+          maxLength: 50
+          title: Region
+        postal_code:
+          type: string
+          maxLength: 20
+          pattern: '^\d{4,5}(-\d{4})?$'
+          title: Postal Code
+        user:
+          anyOf:
+            - {}
+            - type: 'null'
+          title: User
+        is_primary:
+          type: boolean
+          title: Is Primary
+      type: object
+      required:
+        - street
+        - barangay
+        - city
+        - region
+        - postal_code
+        - is_primary
+      title: AddressIn
+    AddressUpdate:
+      properties:
+        street:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Street
+        street2:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Street2
+        barangay:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Barangay
+        city:
+          anyOf:
+            - type: string
+              maxLength: 50
+            - type: 'null'
+          title: City
+        region:
+          anyOf:
+            - type: string
+              maxLength: 50
+            - type: 'null'
+          title: Region
+        postal_code:
+          anyOf:
+            - type: string
+              maxLength: 20
+            - type: 'null'
+          title: Postal Code
+        is_primary:
+          anyOf:
+            - type: boolean
+            - type: 'null'
+          title: Is Primary
+          default: false
+      type: object
+      title: AddressUpdate
+    Body_add_avatar_api_v1_users_me_avatar_post:
+      properties:
+        file:
+          type: string
+          format: binary
+          title: File
+      type: object
+      required:
+        - file
+      title: Body_add_avatar_api_v1_users_me_avatar_post
+    Body_create_product_api_v1_farmer_product_post:
+      properties:
+        name:
+          type: string
+          title: Name
+        description:
+          type: string
+          title: Description
+        unit:
+          type: string
+          title: Unit
+        price_per_unit:
+          type: number
+          title: Price Per Unit
+        stock_quantity:
+          type: integer
+          title: Stock Quantity
+        status:
+          type: string
+          title: Status
+        visibility:
+          type: string
+          title: Visibility
+        images:
+          items:
+            type: string
+            format: binary
+          type: array
+          title: Images
+      type: object
+      required:
+        - name
+        - description
+        - unit
+        - price_per_unit
+        - stock_quantity
+        - status
+        - visibility
+      title: Body_create_product_api_v1_farmer_product_post
+    Body_upload_product_image_api_v1_farmer_product__product_id__images_post:
+      properties:
+        file:
+          type: string
+          format: binary
+          title: File
+      type: object
+      required:
+        - file
+      title: Body_upload_product_image_api_v1_farmer_product__product_id__images_post
+    CustomerOrder:
+      properties:
+        id:
+          type: string
+          title: Id
+        customer_id:
+          type: string
+          title: Customer Id
+        total_price:
+          type: string
+          title: Total Price
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        customer:
+          anyOf:
+            - $ref: '#/components/schemas/prisma__models__User'
+            - type: 'null'
+        farmer_order:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/FarmerOrder'
+              type: array
+            - type: 'null'
+          title: Farmer Order
+        order_item:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/OrderItem'
+              type: array
+            - type: 'null'
+          title: Order Item
+      type: object
+      required:
+        - id
+        - customer_id
+        - total_price
+        - status
+        - updated_at
+        - created_at
+      title: CustomerOrder
+      description: Represents a CustomerOrder record
+    FarmerOrder:
+      properties:
+        id:
+          type: integer
+          title: Id
+        customer_order_id:
+          type: string
+          title: Customer Order Id
+        farmer_id:
+          type: string
+          title: Farmer Id
+        status:
+          $ref: '#/components/schemas/FarmerOrderStatus'
+        subtotal:
+          type: string
+          title: Subtotal
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        order:
+          anyOf:
+            - $ref: '#/components/schemas/CustomerOrder'
+            - type: 'null'
+        farmer:
+          anyOf:
+            - $ref: '#/components/schemas/prisma__models__User'
+            - type: 'null'
+        order_item:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/OrderItem'
+              type: array
+            - type: 'null'
+          title: Order Item
+      type: object
+      required:
+        - id
+        - customer_order_id
+        - farmer_id
+        - status
+        - subtotal
+        - created_at
+      title: FarmerOrder
+      description: Represents a FarmerOrder record
+    FarmerOrderStatus:
+      type: string
+      enum:
+        - pending
+        - accepted
+        - rejected
+        - preparing
+        - ready_to_ship
+        - shipped
+        - delivered
+        - cancelled
+      title: FarmerOrderStatus
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    LoginSchema:
+      properties:
+        email:
+          type: string
+          format: email
+          title: Email
+        password:
+          type: string
+          title: Password
+      type: object
+      required:
+        - email
+        - password
+      title: LoginSchema
+    NotificationPayload:
+      properties:
+        user_id:
+          type: string
+          title: User Id
+        actor_id:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Actor Id
+        actor_name:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Actor Name
+        title:
+          type: string
+          title: Title
+        message:
+          type: string
+          title: Message
+        type:
+          $ref: '#/components/schemas/NotificationType'
+        data:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: 'null'
+          title: Data
+      type: object
+      required:
+        - user_id
+        - title
+        - message
+        - type
+      title: NotificationPayload
+    NotificationType:
+      type: string
+      enum:
+        - order_placed
+        - product_updated
+        - payment_received
+        - low_stock
+        - order_cancelled
+        - message_received
+        - bulk_order_placed
+      title: NotificationType
+    OrderItem:
+      properties:
+        id:
+          type: integer
+          title: Id
+        customer_order_id:
+          type: string
+          title: Customer Order Id
+        farmer_order_id:
+          type: integer
+          title: Farmer Order Id
+        product_id:
+          type: string
+          title: Product Id
+        quantity:
+          type: integer
+          title: Quantity
+        price:
+          type: string
+          title: Price
+        order:
+          anyOf:
+            - $ref: '#/components/schemas/CustomerOrder'
+            - type: 'null'
+        product:
+          anyOf:
+            - $ref: '#/components/schemas/prisma__models__Product'
+            - type: 'null'
+        order_farm:
+          anyOf:
+            - $ref: '#/components/schemas/FarmerOrder'
+            - type: 'null'
+      type: object
+      required:
+        - id
+        - customer_order_id
+        - farmer_order_id
+        - product_id
+        - quantity
+        - price
+      title: OrderItem
+      description: Represents a OrderItem record
+    OrderStatus:
+      type: string
+      enum:
+        - pending
+        - processing
+        - paid
+        - shipped
+        - delivered
+        - cancelled
+        - failed
+        - refunded
+      title: OrderStatus
+    OrderStatusUpdate:
+      properties:
+        status:
+          type: string
+          title: Status
+      type: object
+      required:
+        - status
+      title: OrderStatusUpdate
+    PasswordChangeRequest:
+      properties:
+        current_password:
+          type: string
+          minLength: 6
+          title: Current Password
+        new_password:
+          type: string
+          minLength: 6
+          title: New Password
+      type: object
+      required:
+        - current_password
+        - new_password
+      title: PasswordChangeRequest
+    ProductCategory:
+      properties:
+        id:
+          type: integer
+          title: Id
+        name:
+          type: string
+          title: Name
+        products:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/prisma__models__Product'
+              type: array
+            - type: 'null'
+          title: Products
+      type: object
+      required:
+        - id
+        - name
+      title: ProductCategory
+      description: Represents a ProductCategory record
+    ProductImage:
+      properties:
+        id:
+          type: string
+          title: Id
+        product_id:
+          type: string
+          title: Product Id
+        image_public_url:
+          type: string
+          title: Image Public Url
+        uploaded_at:
+          type: string
+          format: date-time
+          title: Uploaded At
+        product:
+          anyOf:
+            - $ref: '#/components/schemas/prisma__models__Product'
+            - type: 'null'
+      type: object
+      required:
+        - id
+        - product_id
+        - image_public_url
+        - uploaded_at
+      title: ProductImage
+      description: Represents a ProductImage record
+    ProductStatus:
+      type: string
+      enum:
+        - draft
+        - active
+        - archived
+        - sold
+      title: ProductStatus
+    ProductUpdate:
+      properties:
+        name:
+          anyOf:
+            - type: string
+              maxLength: 100
+            - type: 'null'
+          title: Name
+        description:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Description
+        category_id:
+          anyOf:
+            - type: integer
+            - type: 'null'
+          title: Category Id
+        unit:
+          anyOf:
+            - type: string
+              maxLength: 20
+            - type: 'null'
+          title: Unit
+        price_per_unit:
+          anyOf:
+            - type: number
+            - type: 'null'
+          title: Price Per Unit
+        stock_quantity:
+          anyOf:
+            - type: integer
+            - type: 'null'
+          title: Stock Quantity
+        status:
+          anyOf:
+            - $ref: '#/components/schemas/ProductStatus'
+            - type: 'null'
+        visibility:
+          anyOf:
+            - $ref: '#/components/schemas/Visibility'
+            - type: 'null'
+      type: object
+      title: ProductUpdate
+    ProductVisibility:
+      type: string
+      enum:
+        - public
+        - private
+      title: ProductVisibility
+    Review:
+      properties:
+        id:
+          type: integer
+          title: Id
+        customer_id:
+          type: string
+          title: Customer Id
+        product_id:
+          type: string
+          title: Product Id
+        rating:
+          type: integer
+          title: Rating
+        comment:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Comment
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        customer:
+          anyOf:
+            - $ref: '#/components/schemas/prisma__models__User'
+            - type: 'null'
+        product:
+          anyOf:
+            - $ref: '#/components/schemas/prisma__models__Product'
+            - type: 'null'
+      type: object
+      required:
+        - id
+        - customer_id
+        - product_id
+        - rating
+        - created_at
+      title: Review
+      description: Represents a Review record
+    Role:
+      type: string
+      enum:
+        - farmer
+        - customer
+      title: Role
+    UpdateQuantityRequest:
+      properties:
+        quantity:
+          type: integer
+          exclusiveMinimum: 0
+          title: Quantity
+          description: New quantity must be greater than 0
+      type: object
+      required:
+        - quantity
+      title: UpdateQuantityRequest
+    UserCreate:
+      properties:
+        first_name:
+          type: string
+          maxLength: 100
+          title: First Name
+        middle_name:
+          anyOf:
+            - type: string
+              maxLength: 100
+            - type: 'null'
+          title: Middle Name
+        last_name:
+          type: string
+          maxLength: 100
+          title: Last Name
+        suffix:
+          anyOf:
+            - type: string
+              maxLength: 100
+            - type: 'null'
+          title: Suffix
+        profile_image_url:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Profile Image Url
+        email:
+          type: string
+          format: email
+          title: Email
+        password:
+          type: string
+          minLength: 6
+          title: Password
+        phone_number:
+          type: string
+          title: Phone Number
+        gender:
+          anyOf:
+            - type: string
+              maxLength: 50
+            - type: 'null'
+          title: Gender
+        birthday:
+          type: string
+          format: date
+          title: Birthday
+        role:
+          type: string
+          enum:
+            - farmer
+            - customer
+          title: Role
+      type: object
+      required:
+        - first_name
+        - last_name
+        - email
+        - password
+        - phone_number
+        - birthday
+        - role
+      title: UserCreate
+    UserUpdate:
+      properties:
+        first_name:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: First Name
+        middle_name:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Middle Name
+        last_name:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Last Name
+        suffix:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Suffix
+        profile_image_url:
+          anyOf:
+            - type: string
+              maxLength: 2083
+              minLength: 1
+              format: uri
+            - type: 'null'
+          title: Profile Image Url
+        email:
+          anyOf:
+            - type: string
+              format: email
+            - type: 'null'
+          title: Email
+        phone_number:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Phone Number
+        gender:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Gender
+        birthday:
+          anyOf:
+            - type: string
+              format: date
+            - type: 'null'
+          title: Birthday
+      type: object
+      title: UserUpdate
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+        - loc
+        - msg
+        - type
+      title: ValidationError
+    Visibility:
+      type: string
+      enum:
+        - public
+        - private
+        - admin_only
+      title: Visibility
+    prisma__models__Address:
+      properties:
+        id:
+          type: integer
+          title: Id
+        user_id:
+          type: string
+          title: User Id
+        street:
+          type: string
+          title: Street
+        street2:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Street2
+        barangay:
+          type: string
+          title: Barangay
+        city:
+          type: string
+          title: City
+        region:
+          type: string
+          title: Region
+        postal_code:
+          type: string
+          title: Postal Code
+        is_primary:
+          type: boolean
+          title: Is Primary
+        user:
+          anyOf:
+            - $ref: '#/components/schemas/prisma__models__User'
+            - type: 'null'
+      type: object
+      required:
+        - id
+        - user_id
+        - street
+        - barangay
+        - city
+        - region
+        - postal_code
+        - is_primary
+      title: Address
+      description: Represents a Address record
+    prisma__models__Cart:
+      properties:
+        id:
+          type: string
+          title: Id
+        customer_id:
+          type: string
+          title: Customer Id
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+        is_active:
+          type: boolean
+          title: Is Active
+        customer:
+          anyOf:
+            - $ref: '#/components/schemas/prisma__models__User'
+            - type: 'null'
+        cart_items:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/prisma__models__CartItem'
+              type: array
+            - type: 'null'
+          title: Cart Items
+      type: object
+      required:
+        - id
+        - customer_id
+        - created_at
+        - updated_at
+        - is_active
+      title: Cart
+      description: Represents a Cart record
+    prisma__models__CartItem:
+      properties:
+        id:
+          type: string
+          title: Id
+        cart_id:
+          type: string
+          title: Cart Id
+        product_id:
+          type: string
+          title: Product Id
+        quantity:
+          type: integer
+          title: Quantity
+        added_at:
+          type: string
+          format: date-time
+          title: Added At
+        cart:
+          anyOf:
+            - $ref: '#/components/schemas/prisma__models__Cart'
+            - type: 'null'
+        product:
+          anyOf:
+            - $ref: '#/components/schemas/prisma__models__Product'
+            - type: 'null'
+      type: object
+      required:
+        - id
+        - cart_id
+        - product_id
+        - quantity
+        - added_at
+      title: CartItem
+      description: Represents a CartItem record
+    prisma__models__Product:
+      properties:
+        id:
+          type: string
+          title: Id
+        user_id:
+          type: string
+          title: User Id
+        name:
+          type: string
+          title: Name
+        description:
+          type: string
+          title: Description
+        category_id:
+          anyOf:
+            - type: integer
+            - type: 'null'
+          title: Category Id
+        unit:
+          type: string
+          title: Unit
+        status:
+          $ref: '#/components/schemas/ProductStatus'
+        visibility:
+          $ref: '#/components/schemas/ProductVisibility'
+        price_per_unit:
+          type: string
+          title: Price Per Unit
+        stock_quantity:
+          type: integer
+          title: Stock Quantity
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        user:
+          anyOf:
+            - $ref: '#/components/schemas/prisma__models__User'
+            - type: 'null'
+        category:
+          anyOf:
+            - $ref: '#/components/schemas/ProductCategory'
+            - type: 'null'
+        images:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/ProductImage'
+              type: array
+            - type: 'null'
+          title: Images
+        reviews:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/Review'
+              type: array
+            - type: 'null'
+          title: Reviews
+        cart_items:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/prisma__models__CartItem'
+              type: array
+            - type: 'null'
+          title: Cart Items
+        order_item:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/OrderItem'
+              type: array
+            - type: 'null'
+          title: Order Item
+      type: object
+      required:
+        - id
+        - user_id
+        - name
+        - description
+        - unit
+        - status
+        - visibility
+        - price_per_unit
+        - stock_quantity
+        - updated_at
+        - created_at
+      title: Product
+      description: Represents a Product record
+    prisma__models__User:
+      properties:
+        id:
+          type: string
+          title: Id
+        first_name:
+          type: string
+          title: First Name
+        middle_name:
+          type: string
+          title: Middle Name
+        last_name:
+          type: string
+          title: Last Name
+        suffix:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Suffix
+        profile_image_url:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Profile Image Url
+        email:
+          type: string
+          title: Email
+        password:
+          type: string
+          title: Password
+        phone_number:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Phone Number
+        gender:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Gender
+        role:
+          $ref: '#/components/schemas/Role'
+        birthday:
+          type: string
+          format: date-time
+          title: Birthday
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        addresses:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/prisma__models__Address'
+              type: array
+            - type: 'null'
+          title: Addresses
+        products:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/prisma__models__Product'
+              type: array
+            - type: 'null'
+          title: Products
+        reviews:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/Review'
+              type: array
+            - type: 'null'
+          title: Reviews
+        cart:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/prisma__models__Cart'
+              type: array
+            - type: 'null'
+          title: Cart
+        Order:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/CustomerOrder'
+              type: array
+            - type: 'null'
+          title: Order
+        OrderFarm:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/FarmerOrder'
+              type: array
+            - type: 'null'
+          title: Orderfarm
+      type: object
+      required:
+        - id
+        - first_name
+        - middle_name
+        - last_name
+        - email
+        - password
+        - role
+        - birthday
+        - created_at
+      title: User
+      description: Represents a User record
+    src__models__address__Address:
+      properties:
+        street:
+          type: string
+          title: Street
+        street2:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Street2
+        barangay:
+          type: string
+          title: Barangay
+        city:
+          type: string
+          maxLength: 50
+          title: City
+        region:
+          type: string
+          maxLength: 50
+          title: Region
+        postal_code:
+          type: string
+          maxLength: 20
+          pattern: '^\d{4,5}(-\d{4})?$'
+          title: Postal Code
+        user:
+          anyOf:
+            - {}
+            - type: 'null'
+          title: User
+        is_primary:
+          type: boolean
+          title: Is Primary
+        id:
+          type: integer
+          title: Id
+        user_id:
+          type: string
+          title: User Id
+      type: object
+      required:
+        - street
+        - barangay
+        - city
+        - region
+        - postal_code
+        - is_primary
+        - id
+        - user_id
+      title: Address
+    src__models__cart__Cart:
+      properties:
+        is_active:
+          type: boolean
+          title: Is Active
+        id:
+          type: string
+          title: Id
+        customer_id:
+          type: string
+          title: Customer Id
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+        customer:
+          anyOf:
+            - $ref: '#/components/schemas/src__models__user__User'
+            - type: 'null'
+        cart_items:
+          items:
+            $ref: '#/components/schemas/src__models__cart__CartItem'
+          type: array
+          title: Cart Items
+          default: []
+      type: object
+      required:
+        - is_active
+        - id
+        - customer_id
+        - created_at
+        - updated_at
+      title: Cart
+    src__models__cart__CartItem:
+      properties:
+        cart_id:
+          type: string
+          title: Cart Id
+        quantity:
+          type: integer
+          title: Quantity
+        product_id:
+          type: string
+          title: Product Id
+        product:
+          anyOf:
+            - {}
+            - type: 'null'
+          title: Product
+        id:
+          type: string
+          title: Id
+        added_at:
+          type: string
+          format: date-time
+          title: Added At
+      type: object
+      required:
+        - cart_id
+        - quantity
+        - product_id
+        - id
+        - added_at
+      title: CartItem
+    src__models__product__Product:
+      properties:
+        name:
+          type: string
+          maxLength: 99
+          title: Name
+        description:
+          type: string
+          title: Description
+        category_id:
+          anyOf:
+            - type: integer
+            - type: 'null'
+          title: Category Id
+        unit:
+          type: string
+          maxLength: 19
+          title: Unit
+        price_per_unit:
+          type: number
+          title: Price Per Unit
+        stock_quantity:
+          type: integer
+          title: Stock Quantity
+        status:
+          $ref: '#/components/schemas/ProductStatus'
+          default: active
+        visibility:
+          $ref: '#/components/schemas/Visibility'
+          default: public
+        user:
+          anyOf:
+            - {}
+            - type: 'null'
+          title: User
+        images:
+          anyOf:
+            - items: {}
+              type: array
+            - type: 'null'
+          title: Images
+        reviews:
+          anyOf:
+            - items: {}
+              type: array
+            - type: 'null'
+          title: Reviews
+        id:
+          type: string
+          title: Id
+        user_id:
+          type: string
+          title: User Id
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+      type: object
+      required:
+        - name
+        - description
+        - unit
+        - price_per_unit
+        - stock_quantity
+        - id
+        - user_id
+        - updated_at
+        - created_at
+      title: Product
+    src__models__user__User:
+      properties:
+        first_name:
+          type: string
+          maxLength: 100
+          title: First Name
+        middle_name:
+          anyOf:
+            - type: string
+              maxLength: 100
+            - type: 'null'
+          title: Middle Name
+        last_name:
+          type: string
+          maxLength: 100
+          title: Last Name
+        suffix:
+          anyOf:
+            - type: string
+              maxLength: 100
+            - type: 'null'
+          title: Suffix
+        profile_image_url:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Profile Image Url
+        email:
+          type: string
+          format: email
+          title: Email
+        password:
+          type: string
+          minLength: 6
+          title: Password
+        phone_number:
+          type: string
+          title: Phone Number
+        gender:
+          anyOf:
+            - type: string
+              maxLength: 50
+            - type: 'null'
+          title: Gender
+        birthday:
+          type: string
+          format: date
+          title: Birthday
+        role:
+          type: string
+          enum:
+            - farmer
+            - customer
+          title: Role
+        id:
+          type: string
+          title: Id
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        addresses:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/src__models__address__Address'
+              type: array
+            - type: 'null'
+          title: Addresses
+          default: []
+      type: object
+      required:
+        - first_name
+        - last_name
+        - email
+        - password
+        - phone_number
+        - birthday
+        - role
+        - id
+        - created_at
+      title: User
+  securitySchemes:
+    OAuth2PasswordBearer:
+      type: oauth2
+      flows:
+        password:
+          scopes: {}
+          tokenUrl: /login
