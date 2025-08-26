@@ -92,7 +92,7 @@ export const zRole = z.enum(["farmer", "customer"]);
  * Address
  * Represents a Address record
  */
-export const zPrismaModelsAddress = z.object({
+export const zPrismaModelsAddress: z.ZodType<any> = z.object({
   id: z.int(),
   user_id: z.string(),
   street: z.string(),
@@ -102,7 +102,9 @@ export const zPrismaModelsAddress = z.object({
   region: z.string(),
   postal_code: z.string(),
   is_primary: z.boolean(),
-  user: z.optional(z.union([zPrismaModelsUser, z.null()])),
+  user: z.optional(
+    z.union([z.lazy((): z.ZodTypeAny => zPrismaModelsUser), z.null()])
+  ),
 });
 
 /**
@@ -119,65 +121,87 @@ export const zProductVisibility = z.enum(["public", "private"]);
  * ProductCategory
  * Represents a ProductCategory record
  */
-export const zProductCategory = z.object({
+export const zProductCategory: z.ZodType<any> = z.object({
   id: z.int(),
   name: z.string(),
-  products: z.optional(z.union([z.array(zPrismaModelsProduct), z.null()])),
+  products: z.optional(
+    z.union([
+      z.array(z.lazy((): z.ZodTypeAny => zPrismaModelsProduct)),
+      z.null(),
+    ])
+  ),
 });
 
 /**
  * ProductImage
  * Represents a ProductImage record
  */
-export const zProductImage = z.object({
+export const zProductImage: z.ZodType<any> = z.object({
   id: z.string(),
   product_id: z.string(),
   image_public_url: z.string(),
   uploaded_at: z.iso.datetime(),
-  product: z.optional(z.union([zPrismaModelsProduct, z.null()])),
+  product: z.optional(
+    z.union([z.lazy((): z.ZodTypeAny => zPrismaModelsProduct), z.null()])
+  ),
 });
 
 /**
  * Review
  * Represents a Review record
  */
-export const zReview = z.object({
+export const zReview: z.ZodType<any> = z.object({
   id: z.int(),
   customer_id: z.string(),
   product_id: z.string(),
   rating: z.int(),
   comment: z.optional(z.union([z.string(), z.null()])),
   created_at: z.iso.datetime(),
-  customer: z.optional(z.union([zPrismaModelsUser, z.null()])),
-  product: z.optional(z.union([zPrismaModelsProduct, z.null()])),
+  customer: z.optional(
+    z.union([z.lazy((): z.ZodTypeAny => zPrismaModelsUser), z.null()])
+  ),
+  product: z.optional(
+    z.union([z.lazy((): z.ZodTypeAny => zPrismaModelsProduct), z.null()])
+  ),
 });
 
 /**
  * Cart
  * Represents a Cart record
  */
-export const zPrismaModelsCart = z.object({
+export const zPrismaModelsCart: z.ZodType<any> = z.object({
   id: z.string(),
   customer_id: z.string(),
   created_at: z.iso.datetime(),
   updated_at: z.iso.datetime(),
   is_active: z.boolean(),
-  customer: z.optional(z.union([zPrismaModelsUser, z.null()])),
-  cart_items: z.optional(z.union([z.array(zPrismaModelsCartItem), z.null()])),
+  customer: z.optional(
+    z.union([z.lazy((): z.ZodTypeAny => zPrismaModelsUser), z.null()])
+  ),
+  cart_items: z.optional(
+    z.union([
+      z.array(z.lazy((): z.ZodTypeAny => zPrismaModelsCartItem)),
+      z.null(),
+    ])
+  ),
 });
 
 /**
  * CartItem
  * Represents a CartItem record
  */
-export const zPrismaModelsCartItem = z.object({
+export const zPrismaModelsCartItem: z.ZodType<any> = z.object({
   id: z.string(),
   cart_id: z.string(),
   product_id: z.string(),
   quantity: z.int(),
   added_at: z.iso.datetime(),
-  cart: z.optional(z.union([zPrismaModelsCart, z.null()])),
-  product: z.optional(z.union([zPrismaModelsProduct, z.null()])),
+  cart: z.optional(
+    z.union([z.lazy((): z.ZodTypeAny => zPrismaModelsCart), z.null()])
+  ),
+  product: z.optional(
+    z.union([z.lazy((): z.ZodTypeAny => zPrismaModelsProduct), z.null()])
+  ),
 });
 
 /**
@@ -198,39 +222,51 @@ export const zFarmerOrderStatus = z.enum([
  * FarmerOrder
  * Represents a FarmerOrder record
  */
-export const zFarmerOrder = z.object({
+export const zFarmerOrder: z.ZodType<any> = z.object({
   id: z.int(),
   customer_order_id: z.string(),
   farmer_id: z.string(),
   status: zFarmerOrderStatus,
   subtotal: z.string(),
   created_at: z.iso.datetime(),
-  order: z.optional(z.union([zCustomerOrder, z.null()])),
-  farmer: z.optional(z.union([zPrismaModelsUser, z.null()])),
-  order_item: z.optional(z.union([z.array(zOrderItem), z.null()])),
+  order: z.optional(
+    z.union([z.lazy((): z.ZodTypeAny => zCustomerOrder), z.null()])
+  ),
+  farmer: z.optional(
+    z.union([z.lazy((): z.ZodTypeAny => zPrismaModelsUser), z.null()])
+  ),
+  order_item: z.optional(
+    z.union([z.array(z.lazy((): z.ZodTypeAny => zOrderItem)), z.null()])
+  ),
 });
 
 /**
  * OrderItem
  * Represents a OrderItem record
  */
-export const zOrderItem = z.object({
+export const zOrderItem: z.ZodType<any> = z.object({
   id: z.int(),
   customer_order_id: z.string(),
   farmer_order_id: z.int(),
   product_id: z.string(),
   quantity: z.int(),
   price: z.string(),
-  order: z.optional(z.union([zCustomerOrder, z.null()])),
-  product: z.optional(z.union([zPrismaModelsProduct, z.null()])),
-  order_farm: z.optional(z.union([zFarmerOrder, z.null()])),
+  order: z.optional(
+    z.union([z.lazy((): z.ZodTypeAny => zCustomerOrder), z.null()])
+  ),
+  product: z.optional(
+    z.union([z.lazy((): z.ZodTypeAny => zPrismaModelsProduct), z.null()])
+  ),
+  order_farm: z.optional(
+    z.union([z.lazy((): z.ZodTypeAny => zFarmerOrder), z.null()])
+  ),
 });
 
 /**
  * Product
  * Represents a Product record
  */
-export const zPrismaModelsProduct = z.object({
+export const zPrismaModelsProduct: z.ZodType<any> = z.object({
   id: z.string(),
   user_id: z.string(),
   name: z.string(),
@@ -243,19 +279,34 @@ export const zPrismaModelsProduct = z.object({
   stock_quantity: z.int(),
   updated_at: z.iso.datetime(),
   created_at: z.iso.datetime(),
-  user: z.optional(z.union([zPrismaModelsUser, z.null()])),
-  category: z.optional(z.union([zProductCategory, z.null()])),
-  images: z.optional(z.union([z.array(zProductImage), z.null()])),
-  reviews: z.optional(z.union([z.array(zReview), z.null()])),
-  cart_items: z.optional(z.union([z.array(zPrismaModelsCartItem), z.null()])),
-  order_item: z.optional(z.union([z.array(zOrderItem), z.null()])),
+  user: z.optional(
+    z.union([z.lazy((): z.ZodTypeAny => zPrismaModelsUser), z.null()])
+  ),
+  category: z.optional(
+    z.union([z.lazy((): z.ZodTypeAny => zProductCategory), z.null()])
+  ),
+  images: z.optional(
+    z.union([z.array(z.lazy((): z.ZodTypeAny => zProductImage)), z.null()])
+  ),
+  reviews: z.optional(
+    z.union([z.array(z.lazy((): z.ZodTypeAny => zReview)), z.null()])
+  ),
+  cart_items: z.optional(
+    z.union([
+      z.array(z.lazy((): z.ZodTypeAny => zPrismaModelsCartItem)),
+      z.null(),
+    ])
+  ),
+  order_item: z.optional(
+    z.union([z.array(z.lazy((): z.ZodTypeAny => zOrderItem)), z.null()])
+  ),
 });
 
 /**
  * User
  * Represents a User record
  */
-export const zPrismaModelsUser = z.object({
+export const zPrismaModelsUser: z.ZodType<any> = z.object({
   id: z.string(),
   first_name: z.string(),
   middle_name: z.string(),
@@ -269,28 +320,52 @@ export const zPrismaModelsUser = z.object({
   role: zRole,
   birthday: z.iso.datetime(),
   created_at: z.iso.datetime(),
-  addresses: z.optional(z.union([z.array(zPrismaModelsAddress), z.null()])),
-  products: z.optional(z.union([z.array(zPrismaModelsProduct), z.null()])),
-  reviews: z.optional(z.union([z.array(zReview), z.null()])),
-  cart: z.optional(z.union([z.array(zPrismaModelsCart), z.null()])),
-  Order: z.optional(z.union([z.array(zCustomerOrder), z.null()])),
-  OrderFarm: z.optional(z.union([z.array(zFarmerOrder), z.null()])),
+  addresses: z.optional(
+    z.union([
+      z.array(z.lazy((): z.ZodTypeAny => zPrismaModelsAddress)),
+      z.null(),
+    ])
+  ),
+  products: z.optional(
+    z.union([
+      z.array(z.lazy((): z.ZodTypeAny => zPrismaModelsProduct)),
+      z.null(),
+    ])
+  ),
+  reviews: z.optional(
+    z.union([z.array(z.lazy((): z.ZodTypeAny => zReview)), z.null()])
+  ),
+  cart: z.optional(
+    z.union([z.array(z.lazy((): z.ZodTypeAny => zPrismaModelsCart)), z.null()])
+  ),
+  Order: z.optional(
+    z.union([z.array(z.lazy((): z.ZodTypeAny => zCustomerOrder)), z.null()])
+  ),
+  OrderFarm: z.optional(
+    z.union([z.array(z.lazy((): z.ZodTypeAny => zFarmerOrder)), z.null()])
+  ),
 });
 
 /**
  * CustomerOrder
  * Represents a CustomerOrder record
  */
-export const zCustomerOrder = z.object({
+export const zCustomerOrder: z.ZodType<any> = z.object({
   id: z.string(),
   customer_id: z.string(),
   total_price: z.string(),
   status: zOrderStatus,
   updated_at: z.iso.datetime(),
   created_at: z.iso.datetime(),
-  customer: z.optional(z.union([zPrismaModelsUser, z.null()])),
-  farmer_order: z.optional(z.union([z.array(zFarmerOrder), z.null()])),
-  order_item: z.optional(z.union([z.array(zOrderItem), z.null()])),
+  customer: z.optional(
+    z.union([z.lazy((): z.ZodTypeAny => zPrismaModelsUser), z.null()])
+  ),
+  farmer_order: z.optional(
+    z.union([z.array(z.lazy((): z.ZodTypeAny => zFarmerOrder)), z.null()])
+  ),
+  order_item: z.optional(
+    z.union([z.array(z.lazy((): z.ZodTypeAny => zOrderItem)), z.null()])
+  ),
 });
 
 /**

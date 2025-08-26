@@ -1,11 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { zLoginSchema } from "@/client/zod.gen"; 
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "@tanstack/react-query";
-import { loginApiV1AuthLoginPostMutation } from "@/client/@tanstack/react-query.gen";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -16,6 +9,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { z } from "zod";
+import { zLoginSchema } from "@/client/zod.gen";
+import { useMutation } from "@tanstack/react-query";
+import { loginApiV1AuthLoginPostMutation } from "@/client/@tanstack/react-query.gen";
+import { toast } from "sonner";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
 export const Route = createFileRoute("/login")({
   component: RouteComponent,
@@ -24,22 +24,17 @@ export const Route = createFileRoute("/login")({
 type LoginSchemaType = z.infer<typeof zLoginSchema>;
 
 export function LoginForm() {
-
   const onSubmit = (data: LoginSchemaType) => {
     useMutation({
       ...loginApiV1AuthLoginPostMutation(),
       onSuccess: (data) => {
-        toast.success('Login successful!', {
-          description: 'Welcome back!',
-        }); 
+        toast.success("Login successful", { description: "Welcome back!" });
       },
       onError: (error) => {
-        toast.error('Login failed!', {
-          description: error.message,
-        });
-      }
-    })
-  }
+        toast.error("Login failed!", { description: error.message });
+      },
+    });
+  };
 
   const form = useForm({
     resolver: zodResolver(zLoginSchema),
@@ -73,7 +68,11 @@ export function LoginForm() {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="Enter your password" {...field} />
+                <Input
+                  type="password"
+                  placeholder="Enter your password"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -88,10 +87,5 @@ export function LoginForm() {
 }
 
 function RouteComponent() {
-  return (
-    <section>
-      <h1>Login</h1>
-      <LoginForm />
-    </section>
-  );
+  return <LoginForm />;
 }
