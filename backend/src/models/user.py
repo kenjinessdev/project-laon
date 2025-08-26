@@ -11,7 +11,6 @@ class UserBase(BaseModel):
     suffix: Optional[constr(max_length=100)] = None
     profile_image_url: Optional[str] = None
     email: EmailStr
-    password: constr(min_length=6)
     phone_number: str
     # You may use Literal for stricter values
     gender: Optional[constr(max_length=50)] = None
@@ -20,7 +19,23 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
+    password: constr(min_length=6)
     pass
+
+
+class UserCreateOAuth(BaseModel):
+    first_name: Optional[constr(max_length=100)] = None
+    middle_name: Optional[constr(max_length=100)] = None
+    last_name: Optional[constr(max_length=100)] = None
+    suffix: Optional[constr(max_length=100)] = None
+    profile_image_url: Optional[str] = None
+    email: Optional[EmailStr] = None
+    phone_number: Optional[str] = None
+    # You may use Literal for stricter values
+    gender: Optional[constr(max_length=50)] = None
+    birthday: Optional[date] = None
+    role: Optional[Literal['farmer', 'customer']] = 'customer'
+    password: Optional[str] = None
 
 
 class User(UserBase):
@@ -56,3 +71,15 @@ class PasswordChangeRequest(BaseModel):
 class LoginSchema(BaseModel):
     email: EmailStr
     password: str
+
+
+class AuthenticatedUser(BaseModel):
+    access_token: str
+    user: User
+    token_type: str = "bearer"
+
+
+class OAuthenticatedUser(BaseModel):
+    access_token: str
+    user: UserCreateOAuth
+    token_type: str = "bearer"
