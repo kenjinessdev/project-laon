@@ -8,11 +8,18 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
+
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SignupRouteImport } from './routes/signup'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SignupIndexRouteImport } from './routes/signup/index'
+import { Route as SignupFarmerRouteImport } from './routes/signup/farmer'
+import { Route as SignupCustomerRouteImport } from './routes/signup/customer'
+import { Route as SignupLayoutRouteImport } from './routes/signup/_layout'
+
+const SignupRouteImport = createFileRoute('/signup')()
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -34,39 +41,89 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SignupIndexRoute = SignupIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SignupRoute,
+} as any)
+const SignupFarmerRoute = SignupFarmerRouteImport.update({
+  id: '/farmer',
+  path: '/farmer',
+  getParentRoute: () => SignupRoute,
+} as any)
+const SignupCustomerRoute = SignupCustomerRouteImport.update({
+  id: '/customer',
+  path: '/customer',
+  getParentRoute: () => SignupRoute,
+} as any)
+const SignupLayoutRoute = SignupLayoutRouteImport.update({
+  id: '/_layout',
+  getParentRoute: () => SignupRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
-  '/signup': typeof SignupRoute
+  '/signup': typeof SignupLayoutRoute
+  '/signup/customer': typeof SignupCustomerRoute
+  '/signup/farmer': typeof SignupFarmerRoute
+  '/signup/': typeof SignupIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
-  '/signup': typeof SignupRoute
+  '/signup': typeof SignupIndexRoute
+  '/signup/customer': typeof SignupCustomerRoute
+  '/signup/farmer': typeof SignupFarmerRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
-  '/signup': typeof SignupRoute
+  '/signup': typeof SignupRouteWithChildren
+  '/signup/_layout': typeof SignupLayoutRoute
+  '/signup/customer': typeof SignupCustomerRoute
+  '/signup/farmer': typeof SignupFarmerRoute
+  '/signup/': typeof SignupIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/login' | '/signup'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/login'
+    | '/signup'
+    | '/signup/customer'
+    | '/signup/farmer'
+    | '/signup/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/login' | '/signup'
-  id: '__root__' | '/' | '/dashboard' | '/login' | '/signup'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/login'
+    | '/signup'
+    | '/signup/customer'
+    | '/signup/farmer'
+  id:
+    | '__root__'
+    | '/'
+    | '/dashboard'
+    | '/login'
+    | '/signup'
+    | '/signup/_layout'
+    | '/signup/customer'
+    | '/signup/farmer'
+    | '/signup/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
   LoginRoute: typeof LoginRoute
-  SignupRoute: typeof SignupRoute
+  SignupRoute: typeof SignupRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -99,14 +156,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/signup/': {
+      id: '/signup/'
+      path: '/'
+      fullPath: '/signup/'
+      preLoaderRoute: typeof SignupIndexRouteImport
+      parentRoute: typeof SignupRoute
+    }
+    '/signup/farmer': {
+      id: '/signup/farmer'
+      path: '/farmer'
+      fullPath: '/signup/farmer'
+      preLoaderRoute: typeof SignupFarmerRouteImport
+      parentRoute: typeof SignupRoute
+    }
+    '/signup/customer': {
+      id: '/signup/customer'
+      path: '/customer'
+      fullPath: '/signup/customer'
+      preLoaderRoute: typeof SignupCustomerRouteImport
+      parentRoute: typeof SignupRoute
+    }
+    '/signup/_layout': {
+      id: '/signup/_layout'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupLayoutRouteImport
+      parentRoute: typeof SignupRoute
+    }
   }
 }
+
+interface SignupRouteChildren {
+  SignupLayoutRoute: typeof SignupLayoutRoute
+  SignupCustomerRoute: typeof SignupCustomerRoute
+  SignupFarmerRoute: typeof SignupFarmerRoute
+  SignupIndexRoute: typeof SignupIndexRoute
+}
+
+const SignupRouteChildren: SignupRouteChildren = {
+  SignupLayoutRoute: SignupLayoutRoute,
+  SignupCustomerRoute: SignupCustomerRoute,
+  SignupFarmerRoute: SignupFarmerRoute,
+  SignupIndexRoute: SignupIndexRoute,
+}
+
+const SignupRouteWithChildren =
+  SignupRoute._addFileChildren(SignupRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
   LoginRoute: LoginRoute,
-  SignupRoute: SignupRoute,
+  SignupRoute: SignupRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

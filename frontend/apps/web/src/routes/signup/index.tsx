@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Card,
   CardAction,
@@ -8,15 +8,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-export const Route = createFileRoute("/signup")({
+import { Button } from "@/components/ui/button";
+export const Route = createFileRoute("/signup/")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
   return (
-    <section className="flex-col">
-      <h1>Fresh from your Farm to your Table!</h1>
-      <h2>
+    <section className="flex flex-col items-center">
+      <h1 className="font-bold text-4xl text-center">
+        Fresh from your Farm <br />
+        to your Table!
+      </h1>
+      <h2 className="text-center">
         Join our marketplace where farmers sell directly to customers, ensuring
         every fresh produce and fair prices for everyone.
       </h2>
@@ -38,7 +42,11 @@ function RouteComponent() {
           </ul>
         </CardContent>
         <CardFooter>
-          <CardAction>Start Shopping</CardAction>
+          <CardAction className="w-full">
+            <Link to="/signup/customer">
+              <Button className="w-full">Start Shopping</Button>
+            </Link>
+          </CardAction>
         </CardFooter>
       </Card>
       <Card>
@@ -59,37 +67,15 @@ function RouteComponent() {
           </ul>
         </CardContent>
         <CardFooter>
-          <CardAction>Start Selling</CardAction>
+          <CardAction className="w-full">
+            {" "}
+            <Link to="/signup/farmer">
+              <Button className="w-full">Start Selling</Button>
+            </Link>
+          </CardAction>
         </CardFooter>
       </Card>
-      <h1>Why Choose Laon</h1>
-      <Card>
-        <CardHeader>
-          {/** ICON HERE */}
-          <CardTitle>Market Insights</CardTitle>
-          <CardDescription>
-            Real-time market data and selling recommendations.{" "}
-          </CardDescription>
-        </CardHeader>
-      </Card>
-      <Card>
-        <CardHeader>
-          {/** ICON HERE */}
-          <CardTitle>Secure and Trusted</CardTitle>
-          <CardDescription>
-            Safe payments and verified user reviews.{" "}
-          </CardDescription>
-        </CardHeader>
-      </Card>
-      <Card>
-        <CardHeader>
-          {/** ICON HERE */}
-          <CardTitle>Direct Connection</CardTitle>
-          <CardDescription>
-            Connect farmers and customers without middlemen.{" "}
-          </CardDescription>
-        </CardHeader>
-      </Card>
+      <h1 className="font-bold text-3xl">Why Choose Laon</h1>
     </section>
   );
 }
