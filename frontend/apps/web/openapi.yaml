@@ -1,28 +1,62 @@
 openapi: 3.1.0
 info:
   title: LAON
+  description: LAON API Documentation
   version: 0.1.0
 paths:
   /api/v1/auth/facebook:
     get:
-      summary: Facebook Login
+      summary: Start Facebook OAuth2 flow
+      description: Redirects the user to Facebook for authentication.
       operationId: facebook_login_api_v1_auth_facebook_get
       responses:
-        '200':
+        '307':
           description: Successful Response
+        '422':
+          description: Validation Error
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/auth/facebook/callback:
     get:
       summary: Facebook Callback
       operationId: facebook_callback_api_v1_auth_facebook_callback_get
+      parameters:
+        - name: role
+          in: query
+          required: false
+          schema:
+            type: string
+            description: User role to assign if creating a new account
+            default: customer
+            title: Role
+          description: User role to assign if creating a new account
       responses:
         '200':
           description: Successful Response
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/OAuthenticatedUser'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/auth/google:
     get:
       summary: Google Login
@@ -46,7 +80,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/auth/google/callback:
     get:
       summary: Google Callback
@@ -56,7 +96,20 @@ paths:
           description: Successful Response
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/OAuthenticatedUser'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/auth/register:
     post:
       summary: Register
@@ -72,13 +125,20 @@ paths:
           description: Successful Response
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/AuthenticatedUser'
         '422':
-          description: Validation Error
+          description: Unprocessable Entity
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/auth/login:
     post:
       summary: Login
@@ -94,13 +154,20 @@ paths:
           description: Successful Response
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/AuthenticatedUser'
         '422':
           description: Validation Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/auth/refresh:
     post:
       summary: Refresh Token
@@ -110,7 +177,20 @@ paths:
           description: Successful Response
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/AuthenticatedUser'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/farmer/products:
     get:
       summary: My Products
@@ -194,16 +274,25 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/src__models__product__Product'
-                title: Response My Products Api V1 Farmer Products Get
+                $ref: '#/components/schemas/PaginatedProducts'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
         '422':
           description: Validation Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   '/api/v1/farmer/product/{product_id}':
     get:
       summary: View Product
@@ -229,7 +318,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     patch:
       summary: Update Product
       operationId: update_product_api_v1_farmer_product__product_id__patch
@@ -260,7 +355,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     delete:
       summary: Delete Product
       operationId: delete_product_api_v1_farmer_product__product_id__delete
@@ -284,7 +385,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/farmer/product:
     post:
       summary: Create Product
@@ -307,7 +414,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       security:
         - OAuth2PasswordBearer: []
   '/api/v1/farmer/product/{product_id}/images':
@@ -341,7 +454,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   '/api/v1/farmer/product/{product_id}/images/{image_id}':
     delete:
       summary: Delete Product Image
@@ -372,17 +491,44 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   '/api/v1/farmer/product/{product_id}/status':
     patch:
       summary: Update Product Status
       operationId: update_product_status_api_v1_farmer_product__product_id__status_patch
+      security:
+        - OAuth2PasswordBearer: []
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Product Id
       responses:
         '200':
           description: Successful Response
           content:
             application/json:
               schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/farmer/orders:
     get:
       summary: Orders
@@ -435,7 +581,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   '/api/v1/farmer/orders/{order_id}/accept':
     post:
       summary: Accept Order
@@ -460,7 +612,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   '/api/v1/farmer/orders/{order_id}/status':
     patch:
       summary: Update Product Status
@@ -491,7 +649,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/farmer/dashboard:
     get:
       summary: Farmer Dashboard
@@ -502,6 +666,18 @@ paths:
           content:
             application/json:
               schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       security:
         - OAuth2PasswordBearer: []
   /api/v1/customer/add-to-cart:
@@ -526,7 +702,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       security:
         - OAuth2PasswordBearer: []
   '/api/v1/customer/cart-items/{item_id}/quantity':
@@ -560,7 +742,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   '/api/v1/customer/cart-items/{item_id}/delete':
     delete:
       summary: Delete Cart Item
@@ -586,7 +774,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/customer/cart:
     get:
       summary: Get Cart
@@ -597,6 +791,18 @@ paths:
           content:
             application/json:
               schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       security:
         - OAuth2PasswordBearer: []
   /api/v1/customer/checkout:
@@ -609,6 +815,18 @@ paths:
           content:
             application/json:
               schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       security:
         - OAuth2PasswordBearer: []
   /api/v1/customer/orders:
@@ -654,7 +872,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   '/api/v1/customer/orders/{order_id}':
     get:
       summary: Get Order
@@ -680,7 +904,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   '/api/v1/customer/orders/{order_id}/cancel':
     post:
       summary: Cancel Order
@@ -706,7 +936,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   '/api/v1/customer/orders/{order_id}/pay':
     post:
       summary: Confirm Order
@@ -732,7 +968,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   '/api/v1/customer/orders/{order_id}/review':
     post:
       summary: Review Order
@@ -758,7 +1000,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/customer/dashboard:
     get:
       summary: Farmer Dashboard
@@ -769,6 +1017,18 @@ paths:
           content:
             application/json:
               schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       security:
         - OAuth2PasswordBearer: []
   /api/v1/users/me:
@@ -782,6 +1042,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/prisma__models__User'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       security:
         - OAuth2PasswordBearer: []
     patch:
@@ -805,7 +1077,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       security:
         - OAuth2PasswordBearer: []
   /api/v1/users/me/password:
@@ -829,7 +1107,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       security:
         - OAuth2PasswordBearer: []
   /api/v1/users/me/address:
@@ -854,7 +1138,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       security:
         - OAuth2PasswordBearer: []
   '/api/v1/users/me/address/{address_id}':
@@ -888,7 +1178,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     delete:
       summary: Delete Address
       operationId: delete_address_api_v1_users_me_address__address_id__delete
@@ -912,7 +1208,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/users/me/avatar:
     post:
       summary: Add Avatar
@@ -934,7 +1236,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       security:
         - OAuth2PasswordBearer: []
   /api/v1/products:
@@ -1001,13 +1309,20 @@ paths:
           description: Successful Response
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/PaginatedProducts'
         '422':
           description: Validation Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/send-notification:
     post:
       summary: Send Notification
@@ -1029,7 +1344,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/:
     get:
       summary: V1
@@ -1040,6 +1361,18 @@ paths:
           content:
             application/json:
               schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /:
     get:
       summary: Read Root
@@ -1050,6 +1383,18 @@ paths:
           content:
             application/json:
               schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        default:
+          description: All errors return this schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     AddToCartRequest:
@@ -1153,6 +1498,51 @@ components:
           default: false
       type: object
       title: AddressUpdate
+    AuthenticatedUser:
+      properties:
+        access_token:
+          type: string
+          title: Access Token
+        user:
+          $ref: '#/components/schemas/src__models__user__User'
+        token_type:
+          type: string
+          title: Token Type
+          default: bearer
+      type: object
+      required:
+        - access_token
+        - user
+      title: AuthenticatedUser
+    BadRequestErrorResponse:
+      properties:
+        detail:
+          type: string
+          title: Detail
+          default: Bad request
+        missing_fields:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: 'null'
+          title: Missing Fields
+        format_errors:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/FormatError'
+              type: array
+            - type: 'null'
+          title: Format Errors
+        other_errors:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/OtherError'
+              type: array
+            - type: 'null'
+          title: Other Errors
+      type: object
+      title: BadRequestErrorResponse
     Body_add_avatar_api_v1_users_me_avatar_post:
       properties:
         file:
@@ -1261,6 +1651,36 @@ components:
         - created_at
       title: CustomerOrder
       description: Represents a CustomerOrder record
+    ErrorResponse:
+      properties:
+        detail:
+          type: string
+          title: Detail
+        missing_fields:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: 'null'
+          title: Missing Fields
+        format_errors:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/FormatError'
+              type: array
+            - type: 'null'
+          title: Format Errors
+        other_errors:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/OtherError'
+              type: array
+            - type: 'null'
+          title: Other Errors
+      type: object
+      required:
+        - detail
+      title: ErrorResponse
     FarmerOrder:
       properties:
         id:
@@ -1318,15 +1738,19 @@ components:
         - delivered
         - cancelled
       title: FarmerOrderStatus
-    HTTPValidationError:
+    FormatError:
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
+        field:
+          type: string
+          title: Field
+        message:
+          type: string
+          title: Message
       type: object
-      title: HTTPValidationError
+      required:
+        - field
+        - message
+      title: FormatError
     LoginSchema:
       properties:
         email:
@@ -1388,6 +1812,22 @@ components:
         - message_received
         - bulk_order_placed
       title: NotificationType
+    OAuthenticatedUser:
+      properties:
+        access_token:
+          type: string
+          title: Access Token
+        user:
+          $ref: '#/components/schemas/UserCreateOAuth'
+        token_type:
+          type: string
+          title: Token Type
+          default: bearer
+      type: object
+      required:
+        - access_token
+        - user
+      title: OAuthenticatedUser
     OrderItem:
       properties:
         id:
@@ -1451,6 +1891,43 @@ components:
       required:
         - status
       title: OrderStatusUpdate
+    OtherError:
+      properties:
+        field:
+          type: string
+          title: Field
+        message:
+          type: string
+          title: Message
+      type: object
+      required:
+        - field
+        - message
+      title: OtherError
+    PaginatedProducts:
+      properties:
+        skip:
+          type: integer
+          title: Skip
+          default: 0
+        take:
+          type: integer
+          title: Take
+          default: 10
+        total:
+          anyOf:
+            - type: integer
+            - type: 'null'
+          title: Total
+        body:
+          items:
+            $ref: '#/components/schemas/src__models__product__Product'
+          type: array
+          title: Body
+      type: object
+      required:
+        - body
+      title: PaginatedProducts
     PasswordChangeRequest:
       properties:
         current_password:
@@ -1660,10 +2137,6 @@ components:
           type: string
           format: email
           title: Email
-        password:
-          type: string
-          minLength: 6
-          title: Password
         phone_number:
           type: string
           title: Phone Number
@@ -1683,16 +2156,90 @@ components:
             - farmer
             - customer
           title: Role
+        password:
+          type: string
+          minLength: 6
+          title: Password
       type: object
       required:
         - first_name
         - last_name
         - email
-        - password
         - phone_number
         - birthday
         - role
+        - password
       title: UserCreate
+    UserCreateOAuth:
+      properties:
+        first_name:
+          anyOf:
+            - type: string
+              maxLength: 100
+            - type: 'null'
+          title: First Name
+        middle_name:
+          anyOf:
+            - type: string
+              maxLength: 100
+            - type: 'null'
+          title: Middle Name
+        last_name:
+          anyOf:
+            - type: string
+              maxLength: 100
+            - type: 'null'
+          title: Last Name
+        suffix:
+          anyOf:
+            - type: string
+              maxLength: 100
+            - type: 'null'
+          title: Suffix
+        profile_image_url:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Profile Image Url
+        email:
+          anyOf:
+            - type: string
+              format: email
+            - type: 'null'
+          title: Email
+        phone_number:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Phone Number
+        gender:
+          anyOf:
+            - type: string
+              maxLength: 50
+            - type: 'null'
+          title: Gender
+        birthday:
+          anyOf:
+            - type: string
+              format: date
+            - type: 'null'
+          title: Birthday
+        role:
+          anyOf:
+            - type: string
+              enum:
+                - farmer
+                - customer
+            - type: 'null'
+          title: Role
+          default: customer
+        password:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Password
+      type: object
+      title: UserCreateOAuth
     UserUpdate:
       properties:
         first_name:
@@ -1747,27 +2294,35 @@ components:
           title: Birthday
       type: object
       title: UserUpdate
-    ValidationError:
+    ValidationErrorResponse:
       properties:
-        loc:
-          items:
-            anyOf:
-              - type: string
-              - type: integer
-          type: array
-          title: Location
-        msg:
+        detail:
           type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
+          title: Detail
+          default: Validation failed
+        missing_fields:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: 'null'
+          title: Missing Fields
+        format_errors:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/FormatError'
+              type: array
+            - type: 'null'
+          title: Format Errors
+        other_errors:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/OtherError'
+              type: array
+            - type: 'null'
+          title: Other Errors
       type: object
-      required:
-        - loc
-        - msg
-        - type
-      title: ValidationError
+      title: ValidationErrorResponse
     Visibility:
       type: string
       enum:
@@ -2315,10 +2870,6 @@ components:
           type: string
           format: email
           title: Email
-        password:
-          type: string
-          minLength: 6
-          title: Password
         phone_number:
           type: string
           title: Phone Number
@@ -2358,7 +2909,6 @@ components:
         - first_name
         - last_name
         - email
-        - password
         - phone_number
         - birthday
         - role

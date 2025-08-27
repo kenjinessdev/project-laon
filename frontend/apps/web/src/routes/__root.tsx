@@ -10,6 +10,7 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import "../index.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 export interface RouterAppContext {}
 
@@ -34,13 +35,21 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
   }),
 });
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60000,
+    },
+  },
+});
+
 function RootComponent() {
   const isFetching = useRouterState({
     select: (s) => s.isLoading,
   });
 
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <HeadContent />
       <ThemeProvider
         attribute="class"
@@ -55,6 +64,6 @@ function RootComponent() {
         <Toaster richColors />
       </ThemeProvider>
       <TanStackRouterDevtools position="bottom-left" />
-    </>
+    </QueryClientProvider>
   );
 }

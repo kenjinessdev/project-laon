@@ -88,6 +88,43 @@ export type AddressUpdate = {
 };
 
 /**
+ * AuthenticatedUser
+ */
+export type AuthenticatedUser = {
+    /**
+     * Access Token
+     */
+    access_token: string;
+    user: SrcModelsUserUser;
+    /**
+     * Token Type
+     */
+    token_type?: string;
+};
+
+/**
+ * BadRequestErrorResponse
+ */
+export type BadRequestErrorResponse = {
+    /**
+     * Detail
+     */
+    detail?: string;
+    /**
+     * Missing Fields
+     */
+    missing_fields?: Array<string> | null;
+    /**
+     * Format Errors
+     */
+    format_errors?: Array<FormatError> | null;
+    /**
+     * Other Errors
+     */
+    other_errors?: Array<OtherError> | null;
+};
+
+/**
  * Body_add_avatar_api_v1_users_me_avatar_post
  */
 export type BodyAddAvatarApiV1UsersMeAvatarPost = {
@@ -183,6 +220,28 @@ export type CustomerOrder = {
 };
 
 /**
+ * ErrorResponse
+ */
+export type ErrorResponse = {
+    /**
+     * Detail
+     */
+    detail: string;
+    /**
+     * Missing Fields
+     */
+    missing_fields?: Array<string> | null;
+    /**
+     * Format Errors
+     */
+    format_errors?: Array<FormatError> | null;
+    /**
+     * Other Errors
+     */
+    other_errors?: Array<OtherError> | null;
+};
+
+/**
  * FarmerOrder
  * Represents a FarmerOrder record
  */
@@ -222,13 +281,17 @@ export type FarmerOrder = {
 export type FarmerOrderStatus = 'pending' | 'accepted' | 'rejected' | 'preparing' | 'ready_to_ship' | 'shipped' | 'delivered' | 'cancelled';
 
 /**
- * HTTPValidationError
+ * FormatError
  */
-export type HttpValidationError = {
+export type FormatError = {
     /**
-     * Detail
+     * Field
      */
-    detail?: Array<ValidationError>;
+    field: string;
+    /**
+     * Message
+     */
+    message: string;
 };
 
 /**
@@ -284,6 +347,21 @@ export type NotificationPayload = {
 export type NotificationType = 'order_placed' | 'product_updated' | 'payment_received' | 'low_stock' | 'order_cancelled' | 'message_received' | 'bulk_order_placed';
 
 /**
+ * OAuthenticatedUser
+ */
+export type OAuthenticatedUser = {
+    /**
+     * Access Token
+     */
+    access_token: string;
+    user: UserCreateOAuth;
+    /**
+     * Token Type
+     */
+    token_type?: string;
+};
+
+/**
  * OrderItem
  * Represents a OrderItem record
  */
@@ -330,6 +408,42 @@ export type OrderStatusUpdate = {
      * Status
      */
     status: string;
+};
+
+/**
+ * OtherError
+ */
+export type OtherError = {
+    /**
+     * Field
+     */
+    field: string;
+    /**
+     * Message
+     */
+    message: string;
+};
+
+/**
+ * PaginatedProducts
+ */
+export type PaginatedProducts = {
+    /**
+     * Skip
+     */
+    skip?: number;
+    /**
+     * Take
+     */
+    take?: number;
+    /**
+     * Total
+     */
+    total?: number | null;
+    /**
+     * Body
+     */
+    body: Array<SrcModelsProductProduct>;
 };
 
 /**
@@ -509,10 +623,6 @@ export type UserCreate = {
      */
     email: string;
     /**
-     * Password
-     */
-    password: string;
-    /**
      * Phone Number
      */
     phone_number: string;
@@ -528,6 +638,60 @@ export type UserCreate = {
      * Role
      */
     role: 'farmer' | 'customer';
+    /**
+     * Password
+     */
+    password: string;
+};
+
+/**
+ * UserCreateOAuth
+ */
+export type UserCreateOAuth = {
+    /**
+     * First Name
+     */
+    first_name?: string | null;
+    /**
+     * Middle Name
+     */
+    middle_name?: string | null;
+    /**
+     * Last Name
+     */
+    last_name?: string | null;
+    /**
+     * Suffix
+     */
+    suffix?: string | null;
+    /**
+     * Profile Image Url
+     */
+    profile_image_url?: string | null;
+    /**
+     * Email
+     */
+    email?: string | null;
+    /**
+     * Phone Number
+     */
+    phone_number?: string | null;
+    /**
+     * Gender
+     */
+    gender?: string | null;
+    /**
+     * Birthday
+     */
+    birthday?: string | null;
+    /**
+     * Role
+     */
+    role?: ('farmer' | 'customer') | null;
+    /**
+     * Password
+     */
+    password?: string | null;
 };
 
 /**
@@ -573,21 +737,25 @@ export type UserUpdate = {
 };
 
 /**
- * ValidationError
+ * ValidationErrorResponse
  */
-export type ValidationError = {
+export type ValidationErrorResponse = {
     /**
-     * Location
+     * Detail
      */
-    loc: Array<string | number>;
+    detail?: string;
     /**
-     * Message
+     * Missing Fields
      */
-    msg: string;
+    missing_fields?: Array<string> | null;
     /**
-     * Error Type
+     * Format Errors
      */
-    type: string;
+    format_errors?: Array<FormatError> | null;
+    /**
+     * Other Errors
+     */
+    other_errors?: Array<OtherError> | null;
 };
 
 /**
@@ -1043,10 +1211,6 @@ export type SrcModelsUserUser = {
      */
     email: string;
     /**
-     * Password
-     */
-    password: string;
-    /**
      * Phone Number
      */
     phone_number: string;
@@ -1083,26 +1247,62 @@ export type FacebookLoginApiV1AuthFacebookGetData = {
     url: '/api/v1/auth/facebook';
 };
 
+export type FacebookLoginApiV1AuthFacebookGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
+};
+
+export type FacebookLoginApiV1AuthFacebookGetError = FacebookLoginApiV1AuthFacebookGetErrors[keyof FacebookLoginApiV1AuthFacebookGetErrors];
+
 export type FacebookLoginApiV1AuthFacebookGetResponses = {
     /**
-     * Successful Response
+     * All errors return this schema
      */
-    200: unknown;
+    default: ErrorResponse;
 };
+
+export type FacebookLoginApiV1AuthFacebookGetResponse = FacebookLoginApiV1AuthFacebookGetResponses[keyof FacebookLoginApiV1AuthFacebookGetResponses];
 
 export type FacebookCallbackApiV1AuthFacebookCallbackGetData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        /**
+         * Role
+         * User role to assign if creating a new account
+         */
+        role?: string;
+    };
     url: '/api/v1/auth/facebook/callback';
 };
+
+export type FacebookCallbackApiV1AuthFacebookCallbackGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
+};
+
+export type FacebookCallbackApiV1AuthFacebookCallbackGetError = FacebookCallbackApiV1AuthFacebookCallbackGetErrors[keyof FacebookCallbackApiV1AuthFacebookCallbackGetErrors];
 
 export type FacebookCallbackApiV1AuthFacebookCallbackGetResponses = {
     /**
      * Successful Response
      */
-    200: unknown;
+    200: OAuthenticatedUser;
 };
+
+export type FacebookCallbackApiV1AuthFacebookCallbackGetResponse = FacebookCallbackApiV1AuthFacebookCallbackGetResponses[keyof FacebookCallbackApiV1AuthFacebookCallbackGetResponses];
 
 export type GoogleLoginApiV1AuthGoogleGetData = {
     body?: never;
@@ -1120,7 +1320,11 @@ export type GoogleLoginApiV1AuthGoogleGetErrors = {
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type GoogleLoginApiV1AuthGoogleGetError = GoogleLoginApiV1AuthGoogleGetErrors[keyof GoogleLoginApiV1AuthGoogleGetErrors];
@@ -1139,12 +1343,27 @@ export type GoogleCallbackApiV1AuthGoogleCallbackGetData = {
     url: '/api/v1/auth/google/callback';
 };
 
+export type GoogleCallbackApiV1AuthGoogleCallbackGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
+};
+
+export type GoogleCallbackApiV1AuthGoogleCallbackGetError = GoogleCallbackApiV1AuthGoogleCallbackGetErrors[keyof GoogleCallbackApiV1AuthGoogleCallbackGetErrors];
+
 export type GoogleCallbackApiV1AuthGoogleCallbackGetResponses = {
     /**
      * Successful Response
      */
-    200: unknown;
+    200: OAuthenticatedUser;
 };
+
+export type GoogleCallbackApiV1AuthGoogleCallbackGetResponse = GoogleCallbackApiV1AuthGoogleCallbackGetResponses[keyof GoogleCallbackApiV1AuthGoogleCallbackGetResponses];
 
 export type RegisterApiV1AuthRegisterPostData = {
     body: UserCreate;
@@ -1155,9 +1374,13 @@ export type RegisterApiV1AuthRegisterPostData = {
 
 export type RegisterApiV1AuthRegisterPostErrors = {
     /**
-     * Validation Error
+     * Unprocessable Entity
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type RegisterApiV1AuthRegisterPostError = RegisterApiV1AuthRegisterPostErrors[keyof RegisterApiV1AuthRegisterPostErrors];
@@ -1166,8 +1389,10 @@ export type RegisterApiV1AuthRegisterPostResponses = {
     /**
      * Successful Response
      */
-    200: unknown;
+    200: AuthenticatedUser;
 };
+
+export type RegisterApiV1AuthRegisterPostResponse = RegisterApiV1AuthRegisterPostResponses[keyof RegisterApiV1AuthRegisterPostResponses];
 
 export type LoginApiV1AuthLoginPostData = {
     body: LoginSchema;
@@ -1180,7 +1405,11 @@ export type LoginApiV1AuthLoginPostErrors = {
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type LoginApiV1AuthLoginPostError = LoginApiV1AuthLoginPostErrors[keyof LoginApiV1AuthLoginPostErrors];
@@ -1189,8 +1418,10 @@ export type LoginApiV1AuthLoginPostResponses = {
     /**
      * Successful Response
      */
-    200: unknown;
+    200: AuthenticatedUser;
 };
+
+export type LoginApiV1AuthLoginPostResponse = LoginApiV1AuthLoginPostResponses[keyof LoginApiV1AuthLoginPostResponses];
 
 export type RefreshTokenApiV1AuthRefreshPostData = {
     body?: never;
@@ -1199,12 +1430,27 @@ export type RefreshTokenApiV1AuthRefreshPostData = {
     url: '/api/v1/auth/refresh';
 };
 
+export type RefreshTokenApiV1AuthRefreshPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
+};
+
+export type RefreshTokenApiV1AuthRefreshPostError = RefreshTokenApiV1AuthRefreshPostErrors[keyof RefreshTokenApiV1AuthRefreshPostErrors];
+
 export type RefreshTokenApiV1AuthRefreshPostResponses = {
     /**
      * Successful Response
      */
-    200: unknown;
+    200: AuthenticatedUser;
 };
+
+export type RefreshTokenApiV1AuthRefreshPostResponse = RefreshTokenApiV1AuthRefreshPostResponses[keyof RefreshTokenApiV1AuthRefreshPostResponses];
 
 export type MyProductsApiV1FarmerProductsGetData = {
     body?: never;
@@ -1252,19 +1498,26 @@ export type MyProductsApiV1FarmerProductsGetData = {
 
 export type MyProductsApiV1FarmerProductsGetErrors = {
     /**
+     * Bad Request
+     */
+    400: BadRequestErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type MyProductsApiV1FarmerProductsGetError = MyProductsApiV1FarmerProductsGetErrors[keyof MyProductsApiV1FarmerProductsGetErrors];
 
 export type MyProductsApiV1FarmerProductsGetResponses = {
     /**
-     * Response My Products Api V1 Farmer Products Get
      * Successful Response
      */
-    200: Array<SrcModelsProductProduct>;
+    200: PaginatedProducts;
 };
 
 export type MyProductsApiV1FarmerProductsGetResponse = MyProductsApiV1FarmerProductsGetResponses[keyof MyProductsApiV1FarmerProductsGetResponses];
@@ -1285,7 +1538,11 @@ export type DeleteProductApiV1FarmerProductProductIdDeleteErrors = {
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type DeleteProductApiV1FarmerProductProductIdDeleteError = DeleteProductApiV1FarmerProductProductIdDeleteErrors[keyof DeleteProductApiV1FarmerProductProductIdDeleteErrors];
@@ -1313,7 +1570,11 @@ export type ViewProductApiV1FarmerProductProductIdGetErrors = {
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type ViewProductApiV1FarmerProductProductIdGetError = ViewProductApiV1FarmerProductProductIdGetErrors[keyof ViewProductApiV1FarmerProductProductIdGetErrors];
@@ -1343,7 +1604,11 @@ export type UpdateProductApiV1FarmerProductProductIdPatchErrors = {
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type UpdateProductApiV1FarmerProductProductIdPatchError = UpdateProductApiV1FarmerProductProductIdPatchErrors[keyof UpdateProductApiV1FarmerProductProductIdPatchErrors];
@@ -1368,7 +1633,11 @@ export type CreateProductApiV1FarmerProductPostErrors = {
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type CreateProductApiV1FarmerProductPostError = CreateProductApiV1FarmerProductPostErrors[keyof CreateProductApiV1FarmerProductPostErrors];
@@ -1398,7 +1667,11 @@ export type UploadProductImageApiV1FarmerProductProductIdImagesPostErrors = {
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type UploadProductImageApiV1FarmerProductProductIdImagesPostError = UploadProductImageApiV1FarmerProductProductIdImagesPostErrors[keyof UploadProductImageApiV1FarmerProductProductIdImagesPostErrors];
@@ -1432,7 +1705,11 @@ export type DeleteProductImageApiV1FarmerProductProductIdImagesImageIdDeleteErro
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type DeleteProductImageApiV1FarmerProductProductIdImagesImageIdDeleteError = DeleteProductImageApiV1FarmerProductProductIdImagesImageIdDeleteErrors[keyof DeleteProductImageApiV1FarmerProductProductIdImagesImageIdDeleteErrors];
@@ -1446,10 +1723,28 @@ export type DeleteProductImageApiV1FarmerProductProductIdImagesImageIdDeleteResp
 
 export type UpdateProductStatusApiV1FarmerProductProductIdStatusPatchData = {
     body?: never;
-    path?: never;
+    path: {
+        /**
+         * Product Id
+         */
+        product_id: string;
+    };
     query?: never;
     url: '/api/v1/farmer/product/{product_id}/status';
 };
+
+export type UpdateProductStatusApiV1FarmerProductProductIdStatusPatchErrors = {
+    /**
+     * Validation Error
+     */
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
+};
+
+export type UpdateProductStatusApiV1FarmerProductProductIdStatusPatchError = UpdateProductStatusApiV1FarmerProductProductIdStatusPatchErrors[keyof UpdateProductStatusApiV1FarmerProductProductIdStatusPatchErrors];
 
 export type UpdateProductStatusApiV1FarmerProductProductIdStatusPatchResponses = {
     /**
@@ -1486,7 +1781,11 @@ export type OrdersApiV1FarmerOrdersGetErrors = {
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type OrdersApiV1FarmerOrdersGetError = OrdersApiV1FarmerOrdersGetErrors[keyof OrdersApiV1FarmerOrdersGetErrors];
@@ -1514,7 +1813,11 @@ export type AcceptOrderApiV1FarmerOrdersOrderIdAcceptPostErrors = {
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type AcceptOrderApiV1FarmerOrdersOrderIdAcceptPostError = AcceptOrderApiV1FarmerOrdersOrderIdAcceptPostErrors[keyof AcceptOrderApiV1FarmerOrdersOrderIdAcceptPostErrors];
@@ -1542,7 +1845,11 @@ export type UpdateProductStatusApiV1FarmerOrdersOrderIdStatusPatchErrors = {
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type UpdateProductStatusApiV1FarmerOrdersOrderIdStatusPatchError = UpdateProductStatusApiV1FarmerOrdersOrderIdStatusPatchErrors[keyof UpdateProductStatusApiV1FarmerOrdersOrderIdStatusPatchErrors];
@@ -1560,6 +1867,19 @@ export type FarmerDashboardApiV1FarmerDashboardGetData = {
     query?: never;
     url: '/api/v1/farmer/dashboard';
 };
+
+export type FarmerDashboardApiV1FarmerDashboardGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
+};
+
+export type FarmerDashboardApiV1FarmerDashboardGetError = FarmerDashboardApiV1FarmerDashboardGetErrors[keyof FarmerDashboardApiV1FarmerDashboardGetErrors];
 
 export type FarmerDashboardApiV1FarmerDashboardGetResponses = {
     /**
@@ -1579,7 +1899,11 @@ export type AddToCartApiV1CustomerAddToCartPostErrors = {
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type AddToCartApiV1CustomerAddToCartPostError = AddToCartApiV1CustomerAddToCartPostErrors[keyof AddToCartApiV1CustomerAddToCartPostErrors];
@@ -1609,7 +1933,11 @@ export type UpdateCartItemQuantityApiV1CustomerCartItemsItemIdQuantityPatchError
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type UpdateCartItemQuantityApiV1CustomerCartItemsItemIdQuantityPatchError = UpdateCartItemQuantityApiV1CustomerCartItemsItemIdQuantityPatchErrors[keyof UpdateCartItemQuantityApiV1CustomerCartItemsItemIdQuantityPatchErrors];
@@ -1637,7 +1965,11 @@ export type DeleteCartItemApiV1CustomerCartItemsItemIdDeleteDeleteErrors = {
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type DeleteCartItemApiV1CustomerCartItemsItemIdDeleteDeleteError = DeleteCartItemApiV1CustomerCartItemsItemIdDeleteDeleteErrors[keyof DeleteCartItemApiV1CustomerCartItemsItemIdDeleteDeleteErrors];
@@ -1656,6 +1988,19 @@ export type GetCartApiV1CustomerCartGetData = {
     url: '/api/v1/customer/cart';
 };
 
+export type GetCartApiV1CustomerCartGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
+};
+
+export type GetCartApiV1CustomerCartGetError = GetCartApiV1CustomerCartGetErrors[keyof GetCartApiV1CustomerCartGetErrors];
+
 export type GetCartApiV1CustomerCartGetResponses = {
     /**
      * Successful Response
@@ -1669,6 +2014,19 @@ export type CheckoutApiV1CustomerCheckoutPostData = {
     query?: never;
     url: '/api/v1/customer/checkout';
 };
+
+export type CheckoutApiV1CustomerCheckoutPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
+};
+
+export type CheckoutApiV1CustomerCheckoutPostError = CheckoutApiV1CustomerCheckoutPostErrors[keyof CheckoutApiV1CustomerCheckoutPostErrors];
 
 export type CheckoutApiV1CustomerCheckoutPostResponses = {
     /**
@@ -1701,7 +2059,11 @@ export type OrdersApiV1CustomerOrdersGetErrors = {
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type OrdersApiV1CustomerOrdersGetError = OrdersApiV1CustomerOrdersGetErrors[keyof OrdersApiV1CustomerOrdersGetErrors];
@@ -1729,7 +2091,11 @@ export type GetOrderApiV1CustomerOrdersOrderIdGetErrors = {
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type GetOrderApiV1CustomerOrdersOrderIdGetError = GetOrderApiV1CustomerOrdersOrderIdGetErrors[keyof GetOrderApiV1CustomerOrdersOrderIdGetErrors];
@@ -1757,7 +2123,11 @@ export type CancelOrderApiV1CustomerOrdersOrderIdCancelPostErrors = {
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type CancelOrderApiV1CustomerOrdersOrderIdCancelPostError = CancelOrderApiV1CustomerOrdersOrderIdCancelPostErrors[keyof CancelOrderApiV1CustomerOrdersOrderIdCancelPostErrors];
@@ -1785,7 +2155,11 @@ export type ConfirmOrderApiV1CustomerOrdersOrderIdPayPostErrors = {
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type ConfirmOrderApiV1CustomerOrdersOrderIdPayPostError = ConfirmOrderApiV1CustomerOrdersOrderIdPayPostErrors[keyof ConfirmOrderApiV1CustomerOrdersOrderIdPayPostErrors];
@@ -1813,7 +2187,11 @@ export type ReviewOrderApiV1CustomerOrdersOrderIdReviewPostErrors = {
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type ReviewOrderApiV1CustomerOrdersOrderIdReviewPostError = ReviewOrderApiV1CustomerOrdersOrderIdReviewPostErrors[keyof ReviewOrderApiV1CustomerOrdersOrderIdReviewPostErrors];
@@ -1832,6 +2210,19 @@ export type FarmerDashboardApiV1CustomerDashboardGetData = {
     url: '/api/v1/customer/dashboard';
 };
 
+export type FarmerDashboardApiV1CustomerDashboardGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
+};
+
+export type FarmerDashboardApiV1CustomerDashboardGetError = FarmerDashboardApiV1CustomerDashboardGetErrors[keyof FarmerDashboardApiV1CustomerDashboardGetErrors];
+
 export type FarmerDashboardApiV1CustomerDashboardGetResponses = {
     /**
      * Successful Response
@@ -1845,6 +2236,19 @@ export type GetMeApiV1UsersMeGetData = {
     query?: never;
     url: '/api/v1/users/me';
 };
+
+export type GetMeApiV1UsersMeGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
+};
+
+export type GetMeApiV1UsersMeGetError = GetMeApiV1UsersMeGetErrors[keyof GetMeApiV1UsersMeGetErrors];
 
 export type GetMeApiV1UsersMeGetResponses = {
     /**
@@ -1866,7 +2270,11 @@ export type UpdateProfileApiV1UsersMePatchErrors = {
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type UpdateProfileApiV1UsersMePatchError = UpdateProfileApiV1UsersMePatchErrors[keyof UpdateProfileApiV1UsersMePatchErrors];
@@ -1891,7 +2299,11 @@ export type ChangePasswordApiV1UsersMePasswordPatchErrors = {
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type ChangePasswordApiV1UsersMePasswordPatchError = ChangePasswordApiV1UsersMePasswordPatchErrors[keyof ChangePasswordApiV1UsersMePasswordPatchErrors];
@@ -1914,7 +2326,11 @@ export type CreateAddressApiV1UsersMeAddressPostErrors = {
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type CreateAddressApiV1UsersMeAddressPostError = CreateAddressApiV1UsersMeAddressPostErrors[keyof CreateAddressApiV1UsersMeAddressPostErrors];
@@ -1944,7 +2360,11 @@ export type DeleteAddressApiV1UsersMeAddressAddressIdDeleteErrors = {
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type DeleteAddressApiV1UsersMeAddressAddressIdDeleteError = DeleteAddressApiV1UsersMeAddressAddressIdDeleteErrors[keyof DeleteAddressApiV1UsersMeAddressAddressIdDeleteErrors];
@@ -1972,7 +2392,11 @@ export type UpdateAddressApiV1UsersMeAddressAddressIdPatchErrors = {
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type UpdateAddressApiV1UsersMeAddressAddressIdPatchError = UpdateAddressApiV1UsersMeAddressAddressIdPatchErrors[keyof UpdateAddressApiV1UsersMeAddressAddressIdPatchErrors];
@@ -1997,7 +2421,11 @@ export type AddAvatarApiV1UsersMeAvatarPostErrors = {
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type AddAvatarApiV1UsersMeAvatarPostError = AddAvatarApiV1UsersMeAvatarPostErrors[keyof AddAvatarApiV1UsersMeAvatarPostErrors];
@@ -2049,7 +2477,11 @@ export type GetProductsApiV1ProductsGetErrors = {
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type GetProductsApiV1ProductsGetError = GetProductsApiV1ProductsGetErrors[keyof GetProductsApiV1ProductsGetErrors];
@@ -2058,8 +2490,10 @@ export type GetProductsApiV1ProductsGetResponses = {
     /**
      * Successful Response
      */
-    200: unknown;
+    200: PaginatedProducts;
 };
+
+export type GetProductsApiV1ProductsGetResponse = GetProductsApiV1ProductsGetResponses[keyof GetProductsApiV1ProductsGetResponses];
 
 export type SendNotificationApiV1SendNotificationPostData = {
     body: NotificationPayload;
@@ -2072,7 +2506,11 @@ export type SendNotificationApiV1SendNotificationPostErrors = {
     /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
 };
 
 export type SendNotificationApiV1SendNotificationPostError = SendNotificationApiV1SendNotificationPostErrors[keyof SendNotificationApiV1SendNotificationPostErrors];
@@ -2091,6 +2529,19 @@ export type V1ApiV1GetData = {
     url: '/api/v1/';
 };
 
+export type V1ApiV1GetErrors = {
+    /**
+     * Validation Error
+     */
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
+};
+
+export type V1ApiV1GetError = V1ApiV1GetErrors[keyof V1ApiV1GetErrors];
+
 export type V1ApiV1GetResponses = {
     /**
      * Successful Response
@@ -2104,6 +2555,19 @@ export type ReadRootGetData = {
     query?: never;
     url: '/';
 };
+
+export type ReadRootGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: ValidationErrorResponse;
+    /**
+     * All errors return this schema
+     */
+    default: ErrorResponse;
+};
+
+export type ReadRootGetError = ReadRootGetErrors[keyof ReadRootGetErrors];
 
 export type ReadRootGetResponses = {
     /**

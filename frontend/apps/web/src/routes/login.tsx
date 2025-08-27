@@ -10,9 +10,15 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
-import { zLoginSchema } from "@/client/zod.gen";
-import { useMutation } from "@tanstack/react-query";
-import { loginApiV1AuthLoginPostMutation } from "@/client/@tanstack/react-query.gen";
+import { zLoginSchema } from "@/api/client/zod.gen";
+import { QueryClient, useMutation } from "@tanstack/react-query";
+import { loginApiV1AuthLoginPostMutation } from "@/api/client/@tanstack/react-query.gen";
+import type {
+  LoginApiV1AuthLoginPostData,
+  LoginApiV1AuthLoginPostResponse,
+  LoginApiV1AuthLoginPostErrors,
+  LoginApiV1AuthLoginPostError,
+} from "@/api/client";
 import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -24,26 +30,28 @@ export const Route = createFileRoute("/login")({
 type LoginSchemaType = z.infer<typeof zLoginSchema>;
 
 export function LoginForm() {
-  const onSubmit = (data: LoginSchemaType) => {
-    useMutation({
-      ...loginApiV1AuthLoginPostMutation(),
-      onSuccess: (data) => {
-        toast.success("Login successful", { description: "Welcome back!" });
-      },
-      onError: (error) => {
-        toast.error("Login failed!", { description: error.message });
-      },
-    });
-  };
-
-  const form = useForm({
+  const form = useForm<LoginSchemaType>({
     resolver: zodResolver(zLoginSchema),
     defaultValues: {
       email: "",
       password: "",
     },
-    mode: "onChange",
+    mode: "onBlur",
   });
+
+  const login = useMutation({
+    ...loginApiV1AuthLoginPostMutation(),
+    onError: (error) => {
+      toast.error("Login failed!", { description: error.message });
+    },
+    onSuccess: (data) => {
+      toast.success("Login successful!", { description: "Welcome back!" });
+    },
+  });
+
+  const onSubmit = (data: LoginSchemaType) => {
+    login.mutate({ body: data });
+  };
 
   return (
     <Form {...form}>

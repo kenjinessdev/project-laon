@@ -2,24 +2,20 @@
 // safe to delete
 
 {
-  "$schema": "https://r2.better-t-stack.dev/schema.json",
-  "version": "2.33.9",
-  "createdAt": "2025-08-20T10:45:48.817Z",
-  "database": "none",
-  "orm": "none",
-  "backend": "none",
-  "runtime": "none",
-  "frontend": [
-    "tanstack-router"
-  ],
-  "addons": [
-    "pwa",
-    "turborepo"
-  ],
-  "examples": [],
-  "auth": false,
-  "packageManager": "pnpm",
-  "dbSetup": "none",
-  "api": "none",
-  "webDeploy": "none"
+	"$schema": "https://r2.better-t-stack.dev/schema.json",
+	"version": "2.37.0",
+	"createdAt": "2025-08-26T08:43:05.933Z",
+	"database": "none",
+	"orm": "none",
+	"backend": "none",
+	"runtime": "none",
+	"frontend": ["tanstack-router"],
+	"addons": ["pwa", "turborepo"],
+	"examples": [],
+	"auth": false,
+	"packageManager": "pnpm",
+	"dbSetup": "none",
+	"api": "none",
+	"webDeploy": "none",
+	"serverDeploy": "none"
 }
