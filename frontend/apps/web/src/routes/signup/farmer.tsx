@@ -64,73 +64,78 @@ export function FarmerSignupForm() {
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <FormField
-          control={form.control}
-          name="first_name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>First Name</FormLabel>
-              <FormControl>
-                <Input type="text" placeholder="Juan" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="middle_name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Middle Name</FormLabel>
-              <FormControl>
-                <Input type="text" placeholder="Dela" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="last_name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Last Name</FormLabel>
-              <FormControl>
-                <Input type="text" placeholder="Cruz" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="suffix"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Suffix</FormLabel>
-              <Select>
+    <div>
+      {" "}
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col space-y-4"
+        >
+          <FormField
+            control={form.control}
+            name="first_name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>First Name</FormLabel>
                 <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Jr." />
-                  </SelectTrigger>
+                  <Input type="text" placeholder="Juan" {...field} />
                 </FormControl>
-                <SelectContent>
-                  <SelectItem value="Jr.">Jr.</SelectItem>
-                  <SelectItem value="Sr.">Sr.</SelectItem>
-                  <SelectItem value="III">III</SelectItem>
-                  <SelectItem value="IV">IV</SelectItem>
-                  <SelectItem value="V">V</SelectItem>
-                </SelectContent>
-              </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="middle_name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Middle Name</FormLabel>
+                <FormControl>
+                  <Input type="text" placeholder="Dela" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="last_name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Last Name</FormLabel>
+                <FormControl>
+                  <Input type="text" placeholder="Cruz" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="suffix"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Suffix</FormLabel>
+                <Select>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="Jr.">Jr.</SelectItem>
+                    <SelectItem value="Sr.">Sr.</SelectItem>
+                    <SelectItem value="III">III</SelectItem>
+                    <SelectItem value="IV">IV</SelectItem>
+                    <SelectItem value="V">V</SelectItem>
+                  </SelectContent>
+                </Select>
 
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        {/* TODO: IMAGE ATTACHMENT
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {/* TODO: IMAGE ATTACHMENT
         <FormField
           control={form.control}
           name="first_name"
@@ -144,80 +149,85 @@ export function FarmerSignupForm() {
             </FormItem>
           )}
         /> */}
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input
-                  type="email"
-                  placeholder="juandelacruz@email.com"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="phone_number"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Phone Number</FormLabel>
-              <FormControl>
-                <Input type="text" placeholder="09123456789" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="gender"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Sex</FormLabel>
-              <Select>
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="---" />
-                  </SelectTrigger>
+                  <Input
+                    type="email"
+                    placeholder="juandelacruz@email.com"
+                    {...field}
+                  />
                 </FormControl>
-                <SelectContent>
-                  <SelectItem value="III">Male</SelectItem>
-                  <SelectItem value="IV">Female</SelectItem>
-                  <SelectItem value="V">Prefer not to say</SelectItem>
-                </SelectContent>
-              </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="phone_number"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone Number</FormLabel>
+                <FormControl>
+                  <Input type="text" placeholder="09123456789" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="gender"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Sex</FormLabel>
+                <Select>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="---" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="III">Male</SelectItem>
+                    <SelectItem value="IV">Female</SelectItem>
+                    <SelectItem value="V">Prefer not to say</SelectItem>
+                  </SelectContent>
+                </Select>
 
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input type="password" placeholder="*********" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" disabled={!form.formState.isValid}>
-          Signup
-        </Button>
-      </form>
-    </Form>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input type="password" placeholder="*********" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit">Sign up</Button>
+        </form>
+      </Form>
+    </div>
   );
 }
 
 function RouteComponent() {
-  return <FarmerSignupForm />;
+  return (
+    <div>
+      <h1>Farmer Signup</h1>
+      <p>Test description</p>
+      <FarmerSignupForm />
+    </div>
+  );
 }

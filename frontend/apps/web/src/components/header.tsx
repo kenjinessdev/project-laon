@@ -3,7 +3,12 @@ import { ModeToggle } from "./mode-toggle";
 import { Menu, Bell, BellDot } from "lucide-react";
 
 export default function Header() {
-  const links = [{ to: "/", label: "Home" }] as const;
+  const links = [
+    { to: "/", label: "Home" },
+    {
+      /** TODO: USE ROUTETREE.GEN.TS ROUTES TO AUTOGENERATE LINKS */
+    },
+  ] as const;
 
   return (
     // <div>

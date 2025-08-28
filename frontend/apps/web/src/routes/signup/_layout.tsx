@@ -5,5 +5,9 @@ export const Route = createFileRoute("/signup/_layout")({
 });
 
 function RouteComponent() {
-  return <Outlet />;
+  return (
+    <div className="flex flex-col gap-y-8">
+      <Outlet />
+    </div>
+  );
 }
