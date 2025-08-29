@@ -6,7 +6,16 @@ export default function Header() {
   const links = [
     { to: "/", label: "Home" },
     {
-      /** TODO: USE ROUTETREE.GEN.TS ROUTES TO AUTOGENERATE LINKS */
+      to: "/signup",
+      label: "Signup",
+    },
+    {
+      to: "/dashboard",
+      label: "Dashboard",
+    },
+    {
+      to: "/login",
+      label: "Login",
     },
   ] as const;
 

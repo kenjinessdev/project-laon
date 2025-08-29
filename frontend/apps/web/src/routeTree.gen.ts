@@ -15,15 +15,23 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SignupIndexRouteImport } from './routes/signup/index'
+import { Route as CustomerIndexRouteImport } from './routes/customer/index'
 import { Route as SignupFarmerRouteImport } from './routes/signup/farmer'
 import { Route as SignupCustomerRouteImport } from './routes/signup/customer'
 import { Route as SignupLayoutRouteImport } from './routes/signup/_layout'
+import { Route as CustomerLayoutRouteImport } from './routes/customer/_layout'
 
 const SignupRouteImport = createFileRoute('/signup')()
+const CustomerRouteImport = createFileRoute('/customer')()
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CustomerRoute = CustomerRouteImport.update({
+  id: '/customer',
+  path: '/customer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -46,6 +54,11 @@ const SignupIndexRoute = SignupIndexRouteImport.update({
   path: '/',
   getParentRoute: () => SignupRoute,
 } as any)
+const CustomerIndexRoute = CustomerIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CustomerRoute,
+} as any)
 const SignupFarmerRoute = SignupFarmerRouteImport.update({
   id: '/farmer',
   path: '/farmer',
@@ -60,20 +73,27 @@ const SignupLayoutRoute = SignupLayoutRouteImport.update({
   id: '/_layout',
   getParentRoute: () => SignupRoute,
 } as any)
+const CustomerLayoutRoute = CustomerLayoutRouteImport.update({
+  id: '/_layout',
+  getParentRoute: () => CustomerRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
+  '/customer': typeof CustomerLayoutRoute
   '/signup': typeof SignupLayoutRoute
   '/signup/customer': typeof SignupCustomerRoute
   '/signup/farmer': typeof SignupFarmerRoute
+  '/customer/': typeof CustomerIndexRoute
   '/signup/': typeof SignupIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
+  '/customer': typeof CustomerIndexRoute
   '/signup': typeof SignupIndexRoute
   '/signup/customer': typeof SignupCustomerRoute
   '/signup/farmer': typeof SignupFarmerRoute
@@ -83,10 +103,13 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
+  '/customer': typeof CustomerRouteWithChildren
+  '/customer/_layout': typeof CustomerLayoutRoute
   '/signup': typeof SignupRouteWithChildren
   '/signup/_layout': typeof SignupLayoutRoute
   '/signup/customer': typeof SignupCustomerRoute
   '/signup/farmer': typeof SignupFarmerRoute
+  '/customer/': typeof CustomerIndexRoute
   '/signup/': typeof SignupIndexRoute
 }
 export interface FileRouteTypes {
@@ -95,15 +118,18 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/login'
+    | '/customer'
     | '/signup'
     | '/signup/customer'
     | '/signup/farmer'
+    | '/customer/'
     | '/signup/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/dashboard'
     | '/login'
+    | '/customer'
     | '/signup'
     | '/signup/customer'
     | '/signup/farmer'
@@ -112,10 +138,13 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/login'
+    | '/customer'
+    | '/customer/_layout'
     | '/signup'
     | '/signup/_layout'
     | '/signup/customer'
     | '/signup/farmer'
+    | '/customer/'
     | '/signup/'
   fileRoutesById: FileRoutesById
 }
@@ -123,6 +152,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
   LoginRoute: typeof LoginRoute
+  CustomerRoute: typeof CustomerRouteWithChildren
   SignupRoute: typeof SignupRouteWithChildren
 }
 
@@ -133,6 +163,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/customer': {
+      id: '/customer'
+      path: '/customer'
+      fullPath: '/customer'
+      preLoaderRoute: typeof CustomerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -163,6 +200,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupIndexRouteImport
       parentRoute: typeof SignupRoute
     }
+    '/customer/': {
+      id: '/customer/'
+      path: '/'
+      fullPath: '/customer/'
+      preLoaderRoute: typeof CustomerIndexRouteImport
+      parentRoute: typeof CustomerRoute
+    }
     '/signup/farmer': {
       id: '/signup/farmer'
       path: '/farmer'
@@ -184,8 +228,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupLayoutRouteImport
       parentRoute: typeof SignupRoute
     }
+    '/customer/_layout': {
+      id: '/customer/_layout'
+      path: '/customer'
+      fullPath: '/customer'
+      preLoaderRoute: typeof CustomerLayoutRouteImport
+      parentRoute: typeof CustomerRoute
+    }
   }
 }
+
+interface CustomerRouteChildren {
+  CustomerLayoutRoute: typeof CustomerLayoutRoute
+  CustomerIndexRoute: typeof CustomerIndexRoute
+}
+
+const CustomerRouteChildren: CustomerRouteChildren = {
+  CustomerLayoutRoute: CustomerLayoutRoute,
+  CustomerIndexRoute: CustomerIndexRoute,
+}
+
+const CustomerRouteWithChildren = CustomerRoute._addFileChildren(
+  CustomerRouteChildren,
+)
 
 interface SignupRouteChildren {
   SignupLayoutRoute: typeof SignupLayoutRoute
@@ -208,6 +273,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
   LoginRoute: LoginRoute,
+  CustomerRoute: CustomerRouteWithChildren,
   SignupRoute: SignupRouteWithChildren,
 }
 export const routeTree = rootRouteImport
