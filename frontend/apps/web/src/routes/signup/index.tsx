@@ -49,7 +49,7 @@ function RouteComponent() {
           <CardFooter>
             <CardAction className="w-full">
               <Link to="/signup/customer">
-                <Button className="w-full cursor-pointer bg-orange-400">
+                <Button className="w-full cursor-pointer bg-orange-400 hover:bg-orange-500">
                   Start Shopping
                 </Button>
               </Link>
@@ -79,7 +79,7 @@ function RouteComponent() {
             <CardAction className="w-full">
               {" "}
               <Link to="/signup/farmer">
-                <Button className="w-full cursor-pointer bg-green-400">
+                <Button className="w-full cursor-pointer bg-green-400 hover:bg-500">
                   Start Selling
                 </Button>
               </Link>

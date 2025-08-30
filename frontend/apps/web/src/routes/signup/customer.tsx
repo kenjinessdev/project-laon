@@ -55,7 +55,9 @@ export function CustomerSignupForm() {
       toast.error("Signup failed!", { description: error.message });
     },
     onSuccess: (data) => {
-      toast.success("Login successful!", { description: "Signup successful!" });
+      toast.success("Signup successful!", {
+        description: "Signup successful!",
+      });
     },
   });
 
